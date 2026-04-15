@@ -79,47 +79,97 @@ TRACKS = [
 # ============================================
 
 def get_top_cars_for_track(track_name, car_database):
-    """Рекомендует лучшие машины для трассы на основе PP и типа трассы"""
+    """Рекомендует лучшие машины для трассы на основе характеристик"""
+    
+    # Определяем тип трассы
+    track_type = "balanced"  # по умолчанию
+    
+    if any(x in track_name for x in ["Monza", "Le Mans", "Daytona", "High Speed", "Route X"]):
+        track_type = "speed"  # скоростная трасса
+    elif any(x in track_name for x in ["Nordschleife", "Nürburgring", "Spa", "Green Hell"]):
+        track_type = "technical"  # сложная техничная трасса
+    elif any(x in track_name for x in ["Tokyo", "City", "Street"]):
+        track_type = "city"  # городская трасса
+    elif any(x in track_name for x in ["Suzuka", "Fuji", "Autopolis", "Tsukuba"]):
+        track_type = "technical"  # техничная японская
+    elif any(x in track_name for x in ["Laguna", "Willow", "Trial Mountain", "Deep Forest"]):
+        track_type = "twisty"  # извилистая трасса
+    elif any(x in track_name for x in ["Sardegna", "Alsace", "Sainte-Croix"]):
+        track_type = "mixed"  # смешанная трасса
     
     cars_list = []
+    
     for name, data in car_database.items():
         pp = data.get('pp', 0)
         power = data.get('power', 0)
         weight = data.get('weight', 0)
         drive = data.get('drive_type', 'FR')
         
-        if pp > 0 and power > 0 and weight > 0:
-            power_to_weight = power / weight * 1000
+        # Пропускаем машины с нулевыми данными
+        if pp == 0 or power == 0 or weight == 0:
+            continue
+        
+        # Базовые показатели
+        power_to_weight = power / weight  # соотношение мощность/вес
+        weight_kg = weight
+        
+        # Расчёт рейтинга в зависимости от типа трассы
+        score = 0
+        
+        if track_type == "speed":
+            # Для скоростных трасс: важна мощность и аэродинамика
+            score = power * 0.15 + (1000 / weight) * 2 + pp * 0.5
             
-            # Базовая оценка
-            score = pp
+        elif track_type == "technical":
+            # Для техничных трасс: важна управляемость и вес
+            score = (1000 / weight) * 5 + (power / 100) * 2 + pp * 0.4
             
-            # Корректировка под тип трассы
-            if "Monza" in track_name or "Le Mans" in track_name or "Daytona" in track_name or "High Speed" in track_name:
-                # Скоростные трассы: важна мощность
-                score += power / 100
-            elif "Nordschleife" in track_name or "Nürburgring" in track_name or "Spa" in track_name:
-                # Сложные трассы: важна управляемость
-                score += (1000 / weight) * 5
-            elif "Tokyo" in track_name or "City" in track_name:
-                # Городские трассы: важна управляемость
-                score += (1000 / weight) * 3
-            elif "Suzuka" in track_name or "Fuji" in track_name:
-                # Техничные трассы: баланс
-                score += power / 150 + (1000 / weight) * 2
-            elif "Laguna" in track_name or "Willow" in track_name:
-                # Извилистые трассы: важна лёгкость
-                score += (1000 / weight) * 4
+        elif track_type == "city":
+            # Для городских трасс: важна маневренность и разгон
+            score = (1000 / weight) * 6 + (power / 150) * 3 + pp * 0.3
             
-            cars_list.append({
-                'name': name,
-                'pp': pp,
-                'power': power,
-                'weight': weight,
-                'power_to_weight': round(power_to_weight, 1),
-                'drive': drive,
-                'score': round(score, 1)
-            })
+        elif track_type == "twisty":
+            # Для извилистых трасс: важна лёгкость и сцепление
+            score = (1000 / weight) * 7 + (power / 200) * 2 + pp * 0.3
+            
+        else:
+            # Для смешанных трасс: баланс
+            score = (power / 100) * 3 + (1000 / weight) * 4 + pp * 0.4
+        
+        # Бонус за тип привода
+        if drive == "4WD" and track_type in ["city", "twisty"]:
+            score += 20  # Полный привод хорош для сложных условий
+        elif drive == "FR" and track_type == "speed":
+            score += 15  # Задний привод хорош для скорости
+        elif drive == "MR" and track_type == "technical":
+            score += 15  # Среднемоторные хороши для техничных трасс
+        elif drive == "RR" and track_type == "technical":
+            score += 10  # Заднемоторные (Porsche) хороши на техничных трассах
+        
+        # Бонус за известные гоночные машины
+        if "GT3" in name or "GT4" in name or "Gr.3" in name or "Gr.4" in name:
+            score += 30  # Гоночные машины лучше на любых трассах
+        if "GT500" in name or "Super GT" in name:
+            score += 40
+        if "Vision" in name:
+            score += 20
+        
+        cars_list.append({
+            'name': name,
+            'pp': round(pp, 0),
+            'power': round(power, 0),
+            'weight': round(weight, 0),
+            'power_to_weight': round(power_to_weight, 2),
+            'drive': drive,
+            'score': round(score, 0),
+            'track_type': track_type
+        })
+    
+    # Сортируем по рейтингу (от большего к меньшему)
+    cars_list.sort(key=lambda x: x['score'], reverse=True)
+    
+    # Возвращаем топ-5
+    return cars_list[:5]
     
     # Сортируем по score и берём топ-5
     cars_list.sort(key=lambda x: x['score'], reverse=True)
@@ -295,49 +345,68 @@ tab_rec, tab_tune, tab_analysis = st.tabs(["🏆 ТОП-5 МАШИН ДЛЯ ТР
 with tab_rec:
     st.header(f"🏆 Топ-5 машин для трассы: {selected_track}")
     
+    # Определяем тип трассы для отображения
+    if any(x in selected_track for x in ["Monza", "Le Mans", "Daytona"]):
+        st.info("🏁 **Скоростная трасса** — важна максимальная скорость и мощность")
+    elif any(x in selected_track for x in ["Nordschleife", "Nürburgring", "Spa"]):
+        st.info("🌲 **Сложная техничная трасса** — важна стабильность и управляемость")
+    elif any(x in selected_track for x in ["Tokyo", "City"]):
+        st.info("🏙️ **Городская трасса** — важна маневренность и точность")
+    elif any(x in selected_track for x in ["Suzuka", "Fuji", "Autopolis"]):
+        st.info("🗻 **Техничная трасса** — нужен баланс скорости и управляемости")
+    else:
+        st.info("🏎️ **Смешанная трасса** — нужен баланс характеристик")
+    
     top_cars = get_top_cars_for_track(selected_track, CAR_DATABASE)
     
     if top_cars:
         for i, car in enumerate(top_cars):
-            col1, col2, col3, col4, col5 = st.columns([1, 3, 1, 1, 1])
-            
-            # Медаль
-            medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
-            with col1:
-                st.subheader(medals[i])
-            
-            # Название машины
-            with col2:
-                st.subheader(car['name'][:40])
-            
-            # Характеристики
-            with col3:
-                st.metric("PP", f"{car['pp']:.0f}")
-            with col4:
-                st.metric("Мощность/Вес", f"{car['power_to_weight']:.1f}")
-            with col5:
-                st.metric("Привод", car['drive'])
-            
-            # Кнопка выбора этой машины
-            if st.button(f"Выбрать {car['name'][:30]}", key=f"select_{i}"):
-                st.session_state.selected_car = car['name']
-                st.rerun()
-            
-            st.divider()
+            with st.container():
+                col1, col2, col3, col4, col5, col6 = st.columns([1, 3, 1, 1, 1, 1])
+                
+                # Медаль
+                medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
+                with col1:
+                    st.markdown(f"## {medals[i]}")
+                
+                # Название машины
+                with col2:
+                    st.markdown(f"**{car['name'][:45]}**")
+                    st.caption(f"Рейтинг: {car['score']}")
+                
+                # Характеристики
+                with col3:
+                    st.metric("PP", f"{car['pp']:.0f}")
+                with col4:
+                    st.metric("Мощность", f"{car['power']:.0f} л.с.")
+                with col5:
+                    st.metric("Вес", f"{car['weight']:.0f} кг")
+                with col6:
+                    st.metric("Привод", car['drive'])
+                
+                # Кнопка выбора
+                if st.button(f"✅ Выбрать", key=f"select_{i}"):
+                    st.session_state['selected_car'] = car['name']
+                    st.rerun()
+                
+                st.divider()
         
-        # Пояснение
+        # Показываем ещё рекомендации
         with st.expander("ℹ️ Как рассчитывается рейтинг?"):
             st.write("""
-            **Формула рейтинга для трассы учитывает:**
-            - Базовый PP автомобиля
-            - Тип трассы (скоростная, техничная, городская и т.д.)
-            - Соотношение мощность/вес
-            - Тип привода
+            **Рейтинг учитывает:**
+            - **Скоростные трассы** (Monza, Le Mans): мощность и максимальная скорость
+            - **Техничные трассы** (Nordschleife, Suzuka): управляемость и вес
+            - **Городские трассы** (Tokyo): маневренность и разгон
+            - **Извилистые трассы** (Laguna Seca): лёгкость и сцепление
             
-            Чем выше рейтинг, тем лучше машина подходит для этой трассы.
+            **Бонусы:**
+            - Гоночные машины (GT3, GT4, Gr.3) получают преимущество
+            - Полный привод (4WD) лучше на сложных трассах
+            - Задний привод (FR) лучше на скоростных трассах
             """)
     else:
-        st.warning("Недостаточно данных для рекомендаций")
+        st.warning("Недостаточно данных для рекомендаций. Убедитесь, что база машин загружена.")
 
 # ============================================
 # TAB: ТЮНИНГ
