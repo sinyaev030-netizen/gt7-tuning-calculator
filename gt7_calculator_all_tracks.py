@@ -1155,9 +1155,8 @@ def get_top_cars_for_track(track_name):
         data = TOP_CARS_DATABASE[track_name]
         return {
             "top_cars": data["top_cars"],
-            "settings": data["settings"
+            "settings": data["settings"]
         }
-    }
     # Значения по умолчанию для отсутствующих трасс
     return {
         "top_cars": [
