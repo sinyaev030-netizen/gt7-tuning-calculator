@@ -38,7 +38,7 @@ TRACKS = [
 ]
 
 # ============================================
-# ИНДИВИДУАЛЬНЫЕ НАСТРОЙКИ ДЛЯ МАШИНЫ+ТРАССЫ
+# ИНДИВИДУАЛЬНЫЕ НАСТРОЙКИ
 # ============================================
 
 def get_custom_tune(car_name, track_name):
@@ -46,8 +46,6 @@ def get_custom_tune(car_name, track_name):
     
     car_data = CAR_DATABASE.get(car_name, {})
     drive_type = car_data.get('drive_type', 'FR')
-    power = car_data.get('power', 500)
-    weight = car_data.get('weight', 1400)
     
     # Базовые настройки в зависимости от типа привода
     if drive_type == "RR":  # Porsche
@@ -203,7 +201,7 @@ def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r,
 # ИНТЕРФЕЙС
 # ============================================
 
-st.title("🏎️ GT7 Тюнинг Калькулятор v3")
+st.title("🏎️ GT7 Тюнинг Калькулятор v4")
 st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин")
 
 # Боковая панель
@@ -213,18 +211,46 @@ with st.sidebar:
     selected_track = st.selectbox("Трасса", TRACKS)
     selected_car = st.selectbox("Автомобиль", CAR_NAMES)
     
-    if st.button("🎯 Применить оптимальные настройки", use_container_width=True):
+    # Кнопка ручного применения (на всякий случай)
+    if st.button("🔄 Применить оптимальные настройки", use_container_width=True):
         tune = get_custom_tune(selected_car, selected_track)
         for key, value in tune.items():
             st.session_state[key] = value
-        st.success(f"✅ Применены настройки для {selected_car} на трассе {selected_track}")
+        st.success(f"✅ Настройки обновлены для {selected_car[:30]} на трассе {selected_track}")
         st.rerun()
+
+# ============================================
+# АВТООБНОВЛЕНИЕ ПРИ СМЕНЕ МАШИНЫ ИЛИ ТРАССЫ
+# ============================================
 
 # Инициализация
 if 'height_f' not in st.session_state:
     tune = get_custom_tune(CAR_NAMES[0] if CAR_NAMES else "", TRACKS[0])
     for key, value in tune.items():
         st.session_state[key] = value
+    st.session_state.prev_car = CAR_NAMES[0] if CAR_NAMES else ""
+    st.session_state.prev_track = TRACKS[0]
+
+# Проверяем, изменилась ли машина или трасса
+car_changed = st.session_state.prev_car != selected_car
+track_changed = st.session_state.prev_track != selected_track
+
+if car_changed or track_changed:
+    st.session_state.prev_car = selected_car
+    st.session_state.prev_track = selected_track
+    
+    # Получаем новые настройки
+    new_tune = get_custom_tune(selected_car, selected_track)
+    for key, value in new_tune.items():
+        st.session_state[key] = value
+    
+    # Показываем уведомление
+    if car_changed:
+        st.toast(f"🚗 Настройки обновлены для {selected_car[:35]}", icon="✅")
+    if track_changed:
+        st.toast(f"🏁 Настройки обновлены для трассы {selected_track}", icon="✅")
+    
+    st.rerun()
 
 # ============================================
 # ТОП-5 МАШИН
@@ -239,7 +265,7 @@ if top_cars:
         with cols[i]:
             st.markdown(f"**{i+1}. {car['name'][:20]}**")
             st.caption(f"PP: {car['pp']} | {car['power']} л.с.")
-            if st.button(f"Выбрать", key=f"top_{i}"):
+            if st.button(f"✅ Выбрать", key=f"top_{i}"):
                 st.session_state.selected_car = car['name']
                 st.rerun()
 st.divider()
@@ -248,7 +274,7 @@ st.divider()
 # ТЮНИНГ
 # ============================================
 
-st.subheader(f"🔧 Настройки для {selected_car} на трассе {selected_track}")
+st.subheader(f"🔧 Текущие настройки для {selected_car[:40]} на трассе {selected_track}")
 
 col1, col2 = st.columns(2)
 
@@ -308,6 +334,7 @@ if selected_car in CAR_DATABASE:
     col1, col2, col3 = st.columns(3)
     with col1:
         st.metric("🏁 Итоговый PP", f"{pp}")
+        st.caption(f"Базовый PP: {car_data.get('pp', 0)}")
     with col2:
         st.metric("🔄 Поворачиваемость", f"{handling['turn_in']:.1f}")
     with col3:
@@ -320,6 +347,13 @@ if selected_car in CAR_DATABASE:
     fig = go.Figure(data=go.Scatterpolar(r=values, theta=categories, fill='toself', name=selected_car[:20]))
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=400)
     st.plotly_chart(fig, use_container_width=True)
+    
+    # Информация о текущей машине
+    with st.expander("📋 Характеристики автомобиля"):
+        st.write(f"**Тип привода:** {car_data.get('drive_type', '?')}")
+        st.write(f"**Мощность:** {car_data.get('power', 0)} л.с.")
+        st.write(f"**Вес:** {car_data.get('weight', 0)} кг")
+        st.write(f"**Соотношение вес/мощность:** {car_data.get('weight', 0) / car_data.get('power', 1):.2f} кг/л.с.")
 
 st.markdown("---")
-st.caption("💡 Нажмите «Применить оптимальные настройки» для индивидуального тюнинга под вашу машину и трассу")
+st.caption("💡 Настройки автоматически обновляются при смене машины или трассы")
