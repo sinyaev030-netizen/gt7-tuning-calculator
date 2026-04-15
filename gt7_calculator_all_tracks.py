@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import json
 import os
 
-st.set_page_config(page_title="GT7 Калькулятор", layout="wide")
+st.set_page_config(page_title="GT7 Калькулятор - Все трассы", layout="wide")
 
 # ============================================
 # ЗАГРУЗКА БАЗЫ МАШИН
@@ -1224,7 +1224,7 @@ def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r,
     return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
 
 # ============================================
-# ИНИЦИАЛИЗАЦИЯ SESSION_STATE
+# ИНИЦИАЛИЗАЦИЯ
 # ============================================
 
 if 'height_f' not in st.session_state:
@@ -1239,28 +1239,33 @@ if 'prev_track' not in st.session_state:
 # ИНТЕРФЕЙС
 # ============================================
 
-st.title("🏎️ GT7 Тюнинг Калькулятор")
-st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин")
+st.title("🏎️ GT7 Тюнинг Калькулятор - Все трассы")
+st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин | 🏁 Трасс: **{len(TRACKS)}**")
 
 # Боковая панель
 with st.sidebar:
     st.header("🏁 Выбор трассы")
-    selected_track = st.selectbox("Трасса", TRACKS, key="track_select")
+    selected_track = st.selectbox("Трасса", TRACKS)
     
     # Автообновление при смене трассы
     if selected_track != st.session_state.prev_track:
         st.session_state.prev_track = selected_track
-        apply_track_settings(selected_track)
+        settings = get_track_settings(selected_track)
+        for key, value in settings.items():
+            st.session_state[key] = value
         st.rerun()
+    
+    st.info(f"📝 {get_track_description(selected_track)}")
     
     st.header("🚗 Выбор автомобиля")
     selected_car = st.selectbox("Автомобиль", CAR_NAMES, 
-                                 index=CAR_NAMES.index(st.session_state.selected_car) if st.session_state.selected_car in CAR_NAMES else 0,
-                                 key="car_select")
+                                 index=CAR_NAMES.index(st.session_state.selected_car) if st.session_state.selected_car in CAR_NAMES else 0)
     st.session_state.selected_car = selected_car
     
     if st.button("🎯 Применить настройки трассы", use_container_width=True):
-        apply_track_settings(selected_track)
+        settings = get_track_settings(selected_track)
+        for key, value in settings.items():
+            st.session_state[key] = value
         st.success(f"✅ Применены настройки для {selected_track}")
         st.rerun()
 
@@ -1271,16 +1276,19 @@ with st.sidebar:
 st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
 
 top_cars = get_top_cars(selected_track)
-cols = st.columns(5)
-for i, car_name in enumerate(top_cars):
-    with cols[i]:
-        st.markdown(f"**{i+1}. {car_name[:25]}**")
-        if car_name in CAR_DATABASE:
-            data = CAR_DATABASE[car_name]
-            st.caption(f"PP: {data.get('pp', 0)} | {data.get('power', 0)} л.с.")
-        if st.button(f"✅ Выбрать", key=f"top_{i}"):
-            st.session_state.selected_car = car_name
-            st.rerun()
+if top_cars:
+    cols = st.columns(5)
+    for i, car_name in enumerate(top_cars):
+        with cols[i]:
+            st.markdown(f"**{i+1}. {car_name[:25]}**")
+            if car_name in CAR_DATABASE:
+                data = CAR_DATABASE[car_name]
+                st.caption(f"PP: {data.get('pp', 0)} | {data.get('power', 0)} л.с.")
+            if st.button(f"✅ Выбрать", key=f"top_{i}"):
+                st.session_state.selected_car = car_name
+                st.rerun()
+else:
+    st.info("Рекомендации загружаются...")
 st.divider()
 
 # ============================================
@@ -1353,7 +1361,6 @@ if selected_car in CAR_DATABASE:
         st.caption(f"Базовый PP: {car_data.get('pp', 0)}")
     with col2:
         st.metric("🔄 Поворачиваемость", f"{handling['turn_in']:.1f}")
-        st.caption("Отрицательное = недостаточная")
     with col3:
         st.metric("🛡️ Стабильность", f"{handling['stability']:.1f}/10")
     
@@ -1366,4 +1373,4 @@ if selected_car in CAR_DATABASE:
     st.plotly_chart(fig, use_container_width=True)
 
 st.markdown("---")
-st.caption(f"🏎️ GT7 Калькулятор | Выберите трассу → Настройки автоматически обновятся")
+st.caption(f"🏎️ GT7 Калькулятор | {len(CAR_DATABASE)} машин | {len(TRACKS)} трасс")
