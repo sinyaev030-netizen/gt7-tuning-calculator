@@ -229,10 +229,10 @@ TRACK_SETTINGS = {
 # ТОП-5 МАШИН ДЛЯ КАЖДОЙ ТРАССЫ С НАСТРОЙКАМИ
 # ============================================
 
-TOP_CARS_DATABASE = {
+TOP_CARS_DATABASE_DATABASE = {
     # ========== ФРАНЦИЯ ALSACE ==========
     "Франция Alsace - Деревня": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Alpine A110 '17",
             "Renault Sport Mégane R.S. Trophy '11",
             "Peugeot RCZ Gr.4",
@@ -248,7 +248,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Франция Alsace - Деревня (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Alpine A110 '17",
             "Renault Sport Mégane R.S. Trophy '11",
             "Peugeot RCZ Gr.4",
@@ -264,7 +264,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Франция Alsace - тестовая трасса": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -280,7 +280,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Франция Alsace - тестовая трасса (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -298,7 +298,7 @@ TOP_CARS_DATABASE = {
 
     # ========== LAGO MAGGIORE ==========
     "Италия Autodrome Lago Maggiore - Восток": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Ferrari 458 Italia GT3 '13",
             "Porsche 911 GT3 R '19",
             "McLaren 650S GT3 '15",
@@ -314,7 +314,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - Восток (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Ferrari 458 Italia GT3 '13",
             "Porsche 911 GT3 R '19",
             "McLaren 650S GT3 '15",
@@ -330,7 +330,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - Запад": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "BMW M6 GT3 '16",
             "Audi R8 LMS Evo '19",
@@ -346,7 +346,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - Запад (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "BMW M6 GT3 '16",
             "Audi R8 LMS Evo '19",
@@ -362,7 +362,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - Центр": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -378,7 +378,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - Центр (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -394,7 +394,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - полная трасса": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Mercedes-AMG GT3 '20",
             "Ferrari 488 GT3 '18",
@@ -410,7 +410,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodrome Lago Maggiore - полная трасса (обратн.)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Mercedes-AMG GT3 '20",
             "Ferrari 488 GT3 '18",
@@ -428,7 +428,7 @@ TOP_CARS_DATABASE = {
 
     # ========== MONZA ==========
     "Италия Autodromo Nazionale Monza": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 458 Italia GT3 '13",
             "McLaren 720S GT3 '23",
@@ -444,7 +444,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Autodromo Nazionale Monza (без шиканы)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 919 Hybrid '16",
             "Toyota TS050 Hybrid '16",
             "Audi R18 '16",
@@ -462,7 +462,7 @@ TOP_CARS_DATABASE = {
 
     # ========== INTERLAGOS ==========
     "Бразилия Autódromo de Interlagos": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -480,7 +480,7 @@ TOP_CARS_DATABASE = {
 
     # ========== AUTOPOLIS ==========
     "Япония Autopolis International Racing Course": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Honda NSX GT500 '16",
             "Nissan GT-R GT500 '16",
             "Toyota Supra GT500 '97",
@@ -496,7 +496,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Япония Autopolis International Racing Course - укороченная": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Honda NSX '17",
             "Nissan GT-R '17",
             "Toyota GR Supra RZ '19",
@@ -514,7 +514,7 @@ TOP_CARS_DATABASE = {
 
     # ========== BLUE MOON BAY ==========
     "США Blue Moon Bay Speedway - внутренняя A": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Ford GT LM Race Car",
             "Chevrolet Corvette C7 Gr.3",
             "Dodge Viper SRT GT3-R '15",
@@ -532,7 +532,7 @@ TOP_CARS_DATABASE = {
 
     # ========== BRANDS HATCH ==========
     "Великобритания Brands Hatch - Grand Prix Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Aston Martin Vantage GT3 '12",
             "McLaren 650S GT3 '15",
             "BMW M6 GT3 '16",
@@ -548,7 +548,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Великобритания Brands Hatch - Indy Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Honda Civic Type R (FK8) '20",
             "Renault Sport Mégane R.S. Trophy '11",
             "Peugeot RCZ Gr.4",
@@ -566,7 +566,7 @@ TOP_CARS_DATABASE = {
 
     # ========== CIRCUIT GILLES-VILLENEUVE ==========
     "Канада Circuit Gilles-Villeneuve": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "McLaren 720S GT3 '19",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -584,7 +584,7 @@ TOP_CARS_DATABASE = {
 
     # ========== BARCELONA ==========
     "Испания Circuit de Barcelona-Catalunya (GP)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
@@ -602,7 +602,7 @@ TOP_CARS_DATABASE = {
 
     # ========== SAINTE-CROIX ==========
     "Франция Circuit de Sainte-Croix - A": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -618,7 +618,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Франция Circuit de Sainte-Croix - B": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -634,7 +634,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Франция Circuit de Sainte-Croix - C": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 919 Hybrid '16",
             "Toyota TS050 Hybrid '16",
             "Audi R18 '16",
@@ -652,7 +652,7 @@ TOP_CARS_DATABASE = {
 
     # ========== SPA ==========
     "Бельгия Spa (24 часа)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
             "Audi R8 LMS '15",
@@ -670,7 +670,7 @@ TOP_CARS_DATABASE = {
 
     # ========== DAYTONA ==========
     "США Daytona - дорожная": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Ford GT LM Race Car",
             "Chevrolet Corvette C7 Gr.3",
             "Dodge Viper SRT GT3-R '15",
@@ -688,7 +688,7 @@ TOP_CARS_DATABASE = {
 
     # ========== DEEP FOREST ==========
     "Швейцария Deep Forest Raceway": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mazda RX-7 Spirit R '02",
             "Honda NSX Type R '92",
             "Nissan Skyline GT-R V-spec II '94",
@@ -706,7 +706,7 @@ TOP_CARS_DATABASE = {
 
     # ========== DRAGON TRAIL ==========
     "Хорватия Dragon Trail - Побережье": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -722,7 +722,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Хорватия Dragon Trail - Сады": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mazda RX-7 Spirit R '02",
             "Nissan Skyline GT-R V-spec II '94",
             "Toyota Supra RZ '97",
@@ -740,7 +740,7 @@ TOP_CARS_DATABASE = {
 
     # ========== EIGER NORDWAND ==========
     "Швейцария Eiger Nordwand": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Alpine A110 '17",
             "Renault Sport Mégane R.S. Trophy '11",
             "Peugeot RCZ Gr.4",
@@ -758,7 +758,7 @@ TOP_CARS_DATABASE = {
 
     # ========== FUJI ==========
     "Япония Fuji International Speedway": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Toyota Supra GT500 '97",
             "Nissan GT-R GT500 '08",
             "Honda NSX GT500 '08",
@@ -776,7 +776,7 @@ TOP_CARS_DATABASE = {
 
     # ========== GRAND VALLEY ==========
     "США Grand Valley - шоссе №1": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -794,7 +794,7 @@ TOP_CARS_DATABASE = {
 
     # ========== LE MANS ==========
     "Франция Le Mans (24 часа)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 919 Hybrid '16",
             "Toyota TS050 Hybrid '16",
             "Audi R18 '16",
@@ -812,7 +812,7 @@ TOP_CARS_DATABASE = {
 
     # ========== HIGH SPEED RING ==========
     "Япония High Speed Ring": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Nissan GT-R Nismo '17",
             "Porsche 911 Turbo S '20",
             "Ferrari F8 Tributo '19",
@@ -830,7 +830,7 @@ TOP_CARS_DATABASE = {
 
     # ========== KYOTO ==========
     "Япония Kyoto Driving Park - Yamagiwa": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mazda RX-7 Spirit R '02",
             "Nissan Skyline GT-R V-spec II '94",
             "Toyota GR Supra RZ '19",
@@ -848,7 +848,7 @@ TOP_CARS_DATABASE = {
 
     # ========== ROAD ATLANTA ==========
     "США Michelin Raceway Road Atlanta": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
             "Mercedes-AMG GT3 '20",
@@ -866,7 +866,7 @@ TOP_CARS_DATABASE = {
 
     # ========== MOUNT PANORAMA ==========
     "Австралия Mount Panorama": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Holden Commodore Gr.3",
             "Ford Mustang Gr.3",
             "Chevrolet Corvette C7 Gr.3",
@@ -884,7 +884,7 @@ TOP_CARS_DATABASE = {
 
     # ========== NÜRBURGRING ==========
     "Германия Nürburgring (24 часа)": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "BMW M4 GT3 '22",
             "Mercedes-AMG GT3 '20",
@@ -900,7 +900,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Германия Nürburgring GP": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "Porsche 911 GT3 R '19",
             "Ferrari 488 GT3 '18",
@@ -916,7 +916,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Германия Nürburgring Nordschleife": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "BMW M4 GT3 '22",
             "Mercedes-AMG GT3 '20",
@@ -934,7 +934,7 @@ TOP_CARS_DATABASE = {
 
     # ========== RED BULL RING ==========
     "Австрия Red Bull Ring": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "Audi R8 LMS '15",
             "BMW M6 GT3 '16",
@@ -952,7 +952,7 @@ TOP_CARS_DATABASE = {
 
     # ========== SARDEGNA ==========
     "Италия Sardegna - Road Track - A": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Alpine A110 '17",
             "Renault Sport Mégane R.S. Trophy '11",
             "Peugeot RCZ Gr.4",
@@ -968,7 +968,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Sardegna - Road Track - B": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -984,7 +984,7 @@ TOP_CARS_DATABASE = {
         }
     },
     "Италия Sardegna - Road Track - C": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 919 Hybrid '16",
             "Toyota TS050 Hybrid '16",
             "Audi R18 '16",
@@ -1002,7 +1002,7 @@ TOP_CARS_DATABASE = {
 
     # ========== SUZUKA ==========
     "Япония Suzuka Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Honda NSX GT500 '16",
             "Nissan GT-R GT500 '16",
             "Toyota Supra GT500 '97",
@@ -1020,7 +1020,7 @@ TOP_CARS_DATABASE = {
 
     # ========== TOKYO ==========
     "Япония Tokyo Expressway - Центр": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 Carrera RS (993) '95",
             "Honda NSX Type R '92",
             "Mazda RX-7 Spirit R '02",
@@ -1038,7 +1038,7 @@ TOP_CARS_DATABASE = {
 
     # ========== TRIAL MOUNTAIN ==========
     "США Trial Mountain Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 Carrera RS (993) '95",
             "Ferrari F40 '92",
             "Lamborghini Diablo GT '00",
@@ -1056,7 +1056,7 @@ TOP_CARS_DATABASE = {
 
     # ========== TSUKUBA ==========
     "Япония Tsukuba Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Honda Civic Type R (FK8) '20",
             "Mazda RX-7 Spirit R '02",
             "Nissan Skyline GT-R V-spec II '94",
@@ -1074,7 +1074,7 @@ TOP_CARS_DATABASE = {
 
     # ========== WATKINS GLEN ==========
     "США Watkins Glen": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Ford GT LM Race Car",
             "Chevrolet Corvette C7 Gr.3",
             "Dodge Viper SRT GT3-R '15",
@@ -1092,7 +1092,7 @@ TOP_CARS_DATABASE = {
 
     # ========== LAGUNA SECA ==========
     "США WeatherTech Raceway Laguna Seca": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (991) '16",
             "Ferrari 458 Italia '09",
             "McLaren 650S Coupe '14",
@@ -1110,7 +1110,7 @@ TOP_CARS_DATABASE = {
 
     # ========== WILLOW SPRINGS ==========
     "США Willow Springs - Big Willow": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -1128,7 +1128,7 @@ TOP_CARS_DATABASE = {
 
     # ========== YAS MARINA ==========
     "ОАЭ Yas Marina Circuit": {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Mercedes-AMG GT3 '20",
             "Audi R8 LMS '15",
             "BMW M6 GT3 '16",
@@ -1149,17 +1149,17 @@ TOP_CARS_DATABASE = {
 # ФУНКЦИЯ ПОЛУЧЕНИЯ ТОП-5 МАШИН ДЛЯ ТРАССЫ
 # ============================================
 
-def get_top_cars_for_track(track_name):
+def get_TOP_CARS_DATABASE_for_track(track_name):
     """Возвращает топ-5 машин для трассы с их настройками"""
-    if track_name in TOP_CARS_DATABASE:
-        data = TOP_CARS_DATABASE[track_name]
+    if track_name in TOP_CARS_DATABASE_DATABASE:
+        data = TOP_CARS_DATABASE_DATABASE[track_name]
         return {
-            "top_cars": data["top_cars"],
+            "TOP_CARS_DATABASE": data["TOP_CARS_DATABASE"],
             "settings": data["settings"]
         }
     # Значения по умолчанию для отсутствующих трасс
     return {
-        "top_cars": [
+        "TOP_CARS_DATABASE": [
             "Porsche 911 GT3 RS (992) '22",
             "Ferrari 488 GT3 '18",
             "McLaren 720S GT3 '19",
@@ -1171,33 +1171,10 @@ def get_top_cars_for_track(track_name):
 
 def get_track_settings(track_name):
     """Возвращает оптимальные настройки для трассы"""
-    track_data = get_top_cars_for_track(track_name)
+    track_data = get_TOP_CARS_DATABASE_for_track(track_name)
     settings = DEFAULT_SETTINGS.copy()
     settings.update(track_data["settings"])
     return settings
-# ============================================
-# ФУНКЦИИ
-# ============================================
-
-def get_track_settings(track_name):
-    """Возвращает настройки для трассы"""
-    if track_name in TRACK_SETTINGS:
-        settings = DEFAULT_SETTINGS.copy()
-        settings.update(TRACK_SETTINGS[track_name])
-        return settings
-    return DEFAULT_SETTINGS.copy()
-
-def get_top_cars(track_name):
-    """Возвращает топ-5 машин для трассы"""
-    if track_name in TOP_CARS:
-        return TOP_CARS[track_name]
-    return ["Porsche 911 GT3 RS (992) '22", "Ferrari 488 GT3 '18", "McLaren 720S GT3 '19", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"]
-
-def apply_track_settings(track_name):
-    """Применяет настройки трассы к session_state"""
-    settings = get_track_settings(track_name)
-    for key, value in settings.items():
-        st.session_state[key] = value
 
 # ============================================
 # ФУНКЦИИ РАСЧЁТА
@@ -1222,6 +1199,36 @@ def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r,
     response = round((spring_f + spring_r) / 2 + (100 - (height_f + height_r) / 2) / 20, 1)
     response = max(1, min(10, response))
     return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
+
+# ============================================
+# ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ИНТЕРФЕЙСА
+# ============================================
+
+def get_track_description(track_name):
+    """Возвращает описание трассы"""
+    descriptions = {
+        "Италия Autodromo Nazionale Monza": "🏁 Скоростная трасса, длинные прямые",
+        "Германия Nürburgring Nordschleife": "🌲 Зелёный ад, 73 поворота",
+        "Япония Suzuka Circuit": "🗻 Техничная трасса, S-образные связки",
+        "Бельгия Spa (24 часа)": "🏎️ Легендарная трасса, перепады высот",
+        "Франция Le Mans (24 часа)": "🌊 Максимальная скорость, длинные прямые",
+        "Япония Tokyo Expressway - Центр": "🏙️ Городская трасса, близкие стены",
+    }
+    return descriptions.get(track_name, "🏎️ Стандартная трасса")
+
+def get_track_settings(track_name):
+    """Возвращает настройки для трассы"""
+    if track_name in TRACK_SETTINGS:
+        settings = DEFAULT_SETTINGS.copy()
+        settings.update(TRACK_SETTINGS[track_name])
+        return settings
+    return DEFAULT_SETTINGS.copy()
+
+def get_TOP_CARS_DATABASE(track_name):
+    """Возвращает топ-5 машин для трассы"""
+    if track_name in TOP_CARS_DATABASE_DATABASE:
+        return TOP_CARS_DATABASE_DATABASE[track_name]["TOP_CARS_DATABASE"]
+    return ["Porsche 911 GT3 RS (992) '22", "Ferrari 488 GT3 '18", "McLaren 720S GT3 '19", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"]
 
 # ============================================
 # ИНИЦИАЛИЗАЦИЯ
@@ -1275,10 +1282,10 @@ with st.sidebar:
 
 st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
 
-top_cars = get_top_cars(selected_track)
-if top_cars:
+TOP_CARS_DATABASE = get_TOP_CARS_DATABASE(selected_track)
+if TOP_CARS_DATABASE:
     cols = st.columns(5)
-    for i, car_name in enumerate(top_cars):
+    for i, car_name in enumerate(TOP_CARS_DATABASE):
         with cols[i]:
             st.markdown(f"**{i+1}. {car_name[:25]}**")
             if car_name in CAR_DATABASE:
