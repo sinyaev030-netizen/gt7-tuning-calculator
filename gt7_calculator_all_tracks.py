@@ -5,7 +5,7 @@ import plotly.graph_objects as go
 import json
 import os
 
-st.set_page_config(page_title="GT7 Калькулятор", layout="wide")
+st.set_page_config(page_title="GT7 Калькулятор - Все трассы", layout="wide")
 
 # ============================================
 # ЗАГРУЗКА БАЗЫ МАШИН
@@ -21,154 +21,334 @@ CAR_DATABASE = load_car_database()
 CAR_NAMES = sorted(list(CAR_DATABASE.keys())) if CAR_DATABASE else ["Нет данных"]
 
 # ============================================
-# ТРАССЫ
+# ВСЕ ТРАССЫ GT7
 # ============================================
 
 TRACKS = [
-    "🏁 Autodromo Nazionale Monza",
-    "🌲 Nürburgring Nordschleife",
-    "🗻 Suzuka Circuit",
-    "🏎️ Spa-Francorchamps",
-    "🌊 Circuit de la Sarthe (Le Mans)",
-    "🏙️ Tokyo Expressway",
-    "⛰️ Deep Forest Raceway",
-    "🏔️ Trial Mountain Circuit",
-    "🇯🇵 Fuji International Speedway",
-    "🇺🇸 WeatherTech Raceway Laguna Seca",
+    "Франция Alsace - Деревня",
+    "Франция Alsace - Деревня (обратн.)",
+    "Франция Alsace - тестовая трасса",
+    "Франция Alsace - тестовая трасса (обратн.)",
+    "Италия Autodrome Lago Maggiore - Восток",
+    "Италия Autodrome Lago Maggiore - Восток (обратн.)",
+    "Италия Autodrome Lago Maggiore - Запад",
+    "Италия Autodrome Lago Maggiore - Запад (обратн.)",
+    "Италия Autodrome Lago Maggiore - Центр",
+    "Италия Autodrome Lago Maggiore - Центр (обратн.)",
+    "Италия Autodrome Lago Maggiore - полная трасса",
+    "Италия Autodrome Lago Maggiore - полная трасса (обратн.)",
+    "Италия Autodromo Nazionale Monza",
+    "Италия Autodromo Nazionale Monza (без шиканы)",
+    "Бразилия Autódromo de Interlagos",
+    "Япония Autopolis International Racing Course",
+    "Япония Autopolis International Racing Course - укороченная",
+    "США Blue Moon Bay Speedway - внутренняя A",
+    "Великобритания Brands Hatch - Grand Prix Circuit",
+    "Великобритания Brands Hatch - Indy Circuit",
+    "Канада Circuit Gilles-Villeneuve",
+    "Испания Circuit de Barcelona-Catalunya (GP)",
+    "Франция Circuit de Sainte-Croix - A",
+    "Франция Circuit de Sainte-Croix - B",
+    "Франция Circuit de Sainte-Croix - C",
+    "Бельгия Spa (24 часа)",
+    "США Daytona - дорожная",
+    "Швейцария Deep Forest Raceway",
+    "Хорватия Dragon Trail - Побережье",
+    "Хорватия Dragon Trail - Сады",
+    "Швейцария Eiger Nordwand",
+    "Япония Fuji International Speedway",
+    "США Grand Valley - шоссе №1",
+    "Франция Le Mans (24 часа)",
+    "Япония High Speed Ring",
+    "Япония Kyoto Driving Park - Yamagiwa",
+    "США Michelin Raceway Road Atlanta",
+    "Австралия Mount Panorama",
+    "Германия Nürburgring (24 часа)",
+    "Германия Nürburgring GP",
+    "Германия Nürburgring Nordschleife",
+    "Австрия Red Bull Ring",
+    "Италия Sardegna - Road Track - A",
+    "Италия Sardegna - Road Track - B",
+    "Италия Sardegna - Road Track - C",
+    "Япония Suzuka Circuit",
+    "Япония Tokyo Expressway - Центр",
+    "США Trial Mountain Circuit",
+    "Япония Tsukuba Circuit",
+    "США Watkins Glen",
+    "США WeatherTech Raceway Laguna Seca",
+    "США Willow Springs - Big Willow",
+    "ОАЭ Yas Marina Circuit",
 ]
 
 # ============================================
-# ИНДИВИДУАЛЬНЫЕ НАСТРОЙКИ
+# БАЗА ДАННЫХ ТРАСС С ТОП-5 МАШИНАМИ И НАСТРОЙКАМИ
 # ============================================
 
-def get_custom_tune(car_name, track_name):
-    """Возвращает индивидуальные настройки для машины на конкретной трассе"""
+TRACK_DATABASE = {
+    # Скоростные трассы
+    "Италия Autodromo Nazionale Monza": {
+        "type": "speed",
+        "description": "🏁 Скоростная трасса, длинные прямые",
+        "top_cars": ["Porsche 911 GT3 RS (992) '22", "Ferrari 458 Italia GT3 '13", "McLaren 720S GT3 '23", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"],
+        "settings": {
+            "height_f": 63, "height_r": 68, "spring_f": 5.0, "spring_r": 5.4,
+            "downforce_f": 140, "downforce_r": 280, "max_speed": 330, "final_gear": 3.60,
+            "brake_balance": -3, "camber_f": -2.6, "camber_r": -1.9, "toe_f": 0.18, "toe_r": 0.28,
+            "lsd_init_r": 18, "lsd_accel_r": 30
+        }
+    },
+    "Франция Le Mans (24 часа)": {
+        "type": "speed",
+        "description": "🌊 Максимальная скорость, длинные прямые",
+        "top_cars": ["Porsche 919 Hybrid '16", "Toyota TS050 Hybrid '16", "Audi R18 '16", "Bugatti Vision GT", "Peugeot 908 HDi FAP '10"],
+        "settings": {
+            "height_f": 60, "height_r": 65, "spring_f": 5.2, "spring_r": 5.6,
+            "downforce_f": 120, "downforce_r": 250, "max_speed": 360, "final_gear": 3.40,
+            "brake_balance": -3, "camber_f": -2.8, "camber_r": -2.0, "toe_f": 0.20, "toe_r": 0.30,
+            "lsd_init_r": 20, "lsd_accel_r": 35
+        }
+    },
+    "Япония High Speed Ring": {
+        "type": "speed",
+        "description": "🏁 Круговая скоростная трасса",
+        "top_cars": ["Nissan GT-R Nismo '17", "Porsche 911 Turbo S '20", "Ferrari F8 Tributo '19", "McLaren 720S '17", "Lamborghini Huracan LP 610-4 '15"],
+        "settings": {
+            "height_f": 65, "height_r": 70, "spring_f": 5.0, "spring_r": 5.4,
+            "downforce_f": 130, "downforce_r": 260, "max_speed": 340, "final_gear": 3.50,
+            "brake_balance": -2, "camber_f": -2.4, "camber_r": -1.7, "toe_f": 0.15, "toe_r": 0.25,
+            "lsd_init_r": 17, "lsd_accel_r": 28
+        }
+    },
     
+    # Сложные техничные трассы
+    "Германия Nürburgring Nordschleife": {
+        "type": "technical",
+        "description": "🌲 Зелёный ад, 73 поворота",
+        "top_cars": ["Porsche 911 GT3 RS (992) '22", "BMW M4 GT3 '22", "Mercedes-AMG GT3 '20", "Audi R8 LMS Evo '19", "Ferrari 488 GT3 '18"],
+        "settings": {
+            "height_f": 72, "height_r": 77, "spring_f": 4.2, "spring_r": 4.5,
+            "downforce_f": 230, "downforce_r": 440, "max_speed": 280, "final_gear": 4.20,
+            "brake_balance": -2, "camber_f": -2.2, "camber_r": -1.6, "toe_f": 0.10, "toe_r": 0.20,
+            "lsd_init_r": 14, "lsd_accel_r": 24
+        }
+    },
+    "Бельгия Spa (24 часа)": {
+        "type": "technical",
+        "description": "🏎️ Легендарная трасса, перепады высот",
+        "top_cars": ["Porsche 911 GT3 R '19", "Ferrari 488 GT3 '18", "Audi R8 LMS '15", "McLaren 720S GT3 '19", "Mercedes-AMG GT3 '20"],
+        "settings": {
+            "height_f": 68, "height_r": 72, "spring_f": 4.5, "spring_r": 4.8,
+            "downforce_f": 210, "downforce_r": 400, "max_speed": 300, "final_gear": 3.95,
+            "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22,
+            "lsd_init_r": 16, "lsd_accel_r": 27
+        }
+    },
+    "Япония Suzuka Circuit": {
+        "type": "technical",
+        "description": "🗻 Техничная трасса, S-образные связки",
+        "top_cars": ["Honda NSX GT500 '16", "Nissan GT-R GT500 '16", "Toyota Supra GT500 '97", "Porsche 911 GT3 R '19", "Ferrari 488 GT3 '18"],
+        "settings": {
+            "height_f": 68, "height_r": 72, "spring_f": 4.6, "spring_r": 5.0,
+            "downforce_f": 200, "downforce_r": 380, "max_speed": 290, "final_gear": 4.00,
+            "brake_balance": -2, "camber_f": -2.4, "camber_r": -1.8, "toe_f": 0.12, "toe_r": 0.22,
+            "lsd_init_r": 15, "lsd_accel_r": 26
+        }
+    },
+    "США WeatherTech Raceway Laguna Seca": {
+        "type": "twisty",
+        "description": "🇺🇸 Знаменитая шикана, перепады высот",
+        "top_cars": ["Porsche 911 GT3 RS (991) '16", "Ferrari 458 Italia '09", "McLaren 650S Coupe '14", "Chevrolet Corvette C7 ZR1 '19", "BMW M4 '14"],
+        "settings": {
+            "height_f": 70, "height_r": 75, "spring_f": 4.4, "spring_r": 4.7,
+            "downforce_f": 220, "downforce_r": 420, "max_speed": 270, "final_gear": 4.30,
+            "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.10, "toe_r": 0.20,
+            "lsd_init_r": 14, "lsd_accel_r": 25
+        }
+    },
+    "Австралия Mount Panorama": {
+        "type": "technical",
+        "description": "🏔️ Горная трасса, узкие участки",
+        "top_cars": ["Holden Commodore Gr.3", "Ford Mustang Gr.3", "Chevrolet Corvette C7 Gr.3", "Nissan GT-R Nismo GT3 '18", "BMW M6 GT3 '16"],
+        "settings": {
+            "height_f": 70, "height_r": 75, "spring_f": 4.5, "spring_r": 4.8,
+            "downforce_f": 200, "downforce_r": 380, "max_speed": 290, "final_gear": 4.10,
+            "brake_balance": -2, "camber_f": -2.2, "camber_r": -1.6, "toe_f": 0.10, "toe_r": 0.20,
+            "lsd_init_r": 15, "lsd_accel_r": 26
+        }
+    },
+    
+    # Городские трассы
+    "Япония Tokyo Expressway - Центр": {
+        "type": "city",
+        "description": "🏙️ Городская трасса, близкие стены",
+        "top_cars": ["Porsche 911 Carrera RS (993) '95", "Honda NSX Type R '92", "Mazda RX-7 Spirit R '02", "Nissan Skyline GT-R V-spec II '94", "Toyota Supra RZ '97"],
+        "settings": {
+            "height_f": 74, "height_r": 79, "spring_f": 4.0, "spring_r": 4.3,
+            "downforce_f": 160, "downforce_r": 320, "max_speed": 270, "final_gear": 4.50,
+            "brake_balance": -1, "camber_f": -1.8, "camber_r": -1.3, "toe_f": 0.05, "toe_r": 0.15,
+            "lsd_init_r": 13, "lsd_accel_r": 23
+        }
+    },
+    "Великобритания Brands Hatch - Grand Prix Circuit": {
+        "type": "twisty",
+        "description": "🏁 Извилистая трасса, перепады высот",
+        "top_cars": ["Aston Martin Vantage GT3 '12", "McLaren 650S GT3 '15", "BMW M6 GT3 '16", "Ferrari 488 GT3 '18", "Porsche 911 GT3 R '19"],
+        "settings": {
+            "height_f": 70, "height_r": 75, "spring_f": 4.5, "spring_r": 4.8,
+            "downforce_f": 210, "downforce_r": 400, "max_speed": 280, "final_gear": 4.20,
+            "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22,
+            "lsd_init_r": 15, "lsd_accel_r": 26
+        }
+    },
+    
+    # Техничные трассы
+    "Япония Fuji International Speedway": {
+        "type": "technical",
+        "description": "🗻 Длинная прямая, техничные повороты",
+        "top_cars": ["Toyota Supra GT500 '97", "Nissan GT-R GT500 '08", "Honda NSX GT500 '08", "Lexus RC F GT500 '16", "Porsche 911 GT3 R '19"],
+        "settings": {
+            "height_f": 67, "height_r": 71, "spring_f": 4.7, "spring_r": 5.1,
+            "downforce_f": 190, "downforce_r": 360, "max_speed": 310, "final_gear": 3.80,
+            "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22,
+            "lsd_init_r": 16, "lsd_accel_r": 27
+        }
+    },
+    "Австрия Red Bull Ring": {
+        "type": "mixed",
+        "description": "🏎️ Короткая, но техничная",
+        "top_cars": ["Mercedes-AMG GT3 '20", "Audi R8 LMS '15", "BMW M6 GT3 '16", "Ferrari 488 GT3 '18", "Porsche 911 GT3 R '19"],
+        "settings": {
+            "height_f": 68, "height_r": 72, "spring_f": 4.6, "spring_r": 5.0,
+            "downforce_f": 200, "downforce_r": 380, "max_speed": 290, "final_gear": 4.00,
+            "brake_balance": -2, "camber_f": -2.2, "camber_r": -1.6, "toe_f": 0.10, "toe_r": 0.20,
+            "lsd_init_r": 15, "lsd_accel_r": 26
+        }
+    },
+    
+    # Извилистые трассы
+    "Швейцария Deep Forest Raceway": {
+        "type": "twisty",
+        "description": "⛰️ Лесная трасса, тоннель",
+        "top_cars": ["Mazda RX-7 Spirit R '02", "Honda NSX Type R '92", "Nissan Skyline GT-R V-spec II '94", "Toyota Supra RZ '97", "Subaru Impreza 22B-STi '98"],
+        "settings": {
+            "height_f": 72, "height_r": 77, "spring_f": 4.3, "spring_r": 4.6,
+            "downforce_f": 200, "downforce_r": 380, "max_speed": 275, "final_gear": 4.30,
+            "brake_balance": -2, "camber_f": -2.0, "camber_r": -1.4, "toe_f": 0.08, "toe_r": 0.18,
+            "lsd_init_r": 14, "lsd_accel_r": 24
+        }
+    },
+    "США Trial Mountain Circuit": {
+        "type": "twisty",
+        "description": "🏔️ Горная трасса, прыжки",
+        "top_cars": ["Porsche 911 Carrera RS (993) '95", "Ferrari F40 '92", "Lamborghini Diablo GT '00", "Nissan Skyline GT-R V-spec II '94", "Mazda RX-7 Spirit R '02"],
+        "settings": {
+            "height_f": 74, "height_r": 79, "spring_f": 4.2, "spring_r": 4.5,
+            "downforce_f": 190, "downforce_r": 360, "max_speed": 285, "final_gear": 4.15,
+            "brake_balance": -2, "camber_f": -2.0, "camber_r": -1.4, "toe_f": 0.08, "toe_r": 0.18,
+            "lsd_init_r": 14, "lsd_accel_r": 24
+        }
+    },
+    
+    # Остальные трассы (стандартные настройки)
+    "США Watkins Glen": {
+        "type": "mixed",
+        "description": "🏎️ Быстрая, плавные повороты",
+        "top_cars": ["Ford GT LM Race Car", "Chevrolet Corvette C7 Gr.3", "Dodge Viper SRT GT3-R '15", "Ferrari 488 GT3 '18", "Porsche 911 GT3 R '19"],
+        "settings": {"height_f": 68, "height_r": 72, "spring_f": 4.6, "spring_r": 5.0, "downforce_f": 190, "downforce_r": 360, "max_speed": 300, "final_gear": 3.90, "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22, "lsd_init_r": 16, "lsd_accel_r": 27}
+    },
+    "Канада Circuit Gilles-Villeneuve": {
+        "type": "mixed",
+        "description": "🏁 Городская трасса, шиканы",
+        "top_cars": ["McLaren 720S GT3 '19", "Ferrari 488 GT3 '18", "Mercedes-AMG GT3 '20", "Audi R8 LMS '15", "Porsche 911 GT3 R '19"],
+        "settings": {"height_f": 67, "height_r": 71, "spring_f": 4.6, "spring_r": 5.0, "downforce_f": 200, "downforce_r": 380, "max_speed": 300, "final_gear": 3.95, "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22, "lsd_init_r": 16, "lsd_accel_r": 27}
+    },
+    "Бразилия Autódromo de Interlagos": {
+        "type": "technical",
+        "description": "🌧️ Неровная трасса, нет прямой",
+        "top_cars": ["Porsche 911 GT3 R '19", "Ferrari 488 GT3 '18", "Mercedes-AMG GT3 '20", "BMW M6 GT3 '16", "Audi R8 LMS '15"],
+        "settings": {"height_f": 69, "height_r": 73, "spring_f": 4.5, "spring_r": 4.8, "downforce_f": 210, "downforce_r": 400, "max_speed": 290, "final_gear": 4.10, "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22, "lsd_init_r": 15, "lsd_accel_r": 26}
+    },
+    "США Daytona - дорожная": {
+        "type": "speed",
+        "description": "🏁 Овальная + шикана",
+        "top_cars": ["Ford GT LM Race Car", "Chevrolet Corvette C7 Gr.3", "Dodge Viper SRT GT3-R '15", "Nissan GT-R Nismo GT3 '18", "Porsche 911 GT3 R '19"],
+        "settings": {"height_f": 64, "height_r": 68, "spring_f": 5.0, "spring_r": 5.4, "downforce_f": 140, "downforce_r": 280, "max_speed": 330, "final_gear": 3.60, "brake_balance": -2, "camber_f": -2.5, "camber_r": -1.8, "toe_f": 0.16, "toe_r": 0.26, "lsd_init_r": 17, "lsd_accel_r": 28}
+    },
+    "Япония Tsukuba Circuit": {
+        "type": "twisty",
+        "description": "🗻 Короткая техничная трасса",
+        "top_cars": ["Honda Civic Type R (FK8) '20", "Mazda RX-7 Spirit R '02", "Nissan Skyline GT-R V-spec II '94", "Toyota GR Supra RZ '19", "Subaru WRX STI Type S '14"],
+        "settings": {"height_f": 72, "height_r": 77, "spring_f": 4.2, "spring_r": 4.5, "downforce_f": 200, "downforce_r": 380, "max_speed": 260, "final_gear": 4.40, "brake_balance": -2, "camber_f": -2.0, "camber_r": -1.4, "toe_f": 0.08, "toe_r": 0.18, "lsd_init_r": 14, "lsd_accel_r": 24}
+    },
+    "США Willow Springs - Big Willow": {
+        "type": "speed",
+        "description": "🏁 Быстрая трасса, длинные повороты",
+        "top_cars": ["Porsche 911 GT3 RS (992) '22", "Ferrari 488 GT3 '18", "McLaren 720S GT3 '19", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"],
+        "settings": {"height_f": 65, "height_r": 69, "spring_f": 4.9, "spring_r": 5.3, "downforce_f": 160, "downforce_r": 320, "max_speed": 310, "final_gear": 3.75, "brake_balance": -2, "camber_f": -2.5, "camber_r": -1.8, "toe_f": 0.16, "toe_r": 0.26, "lsd_init_r": 17, "lsd_accel_r": 28}
+    },
+    "ОАЭ Yas Marina Circuit": {
+        "type": "technical",
+        "description": "🏎️ Современная трасса, отель",
+        "top_cars": ["Mercedes-AMG GT3 '20", "Audi R8 LMS '15", "BMW M6 GT3 '16", "Ferrari 488 GT3 '18", "Porsche 911 GT3 R '19"],
+        "settings": {"height_f": 68, "height_r": 72, "spring_f": 4.6, "spring_r": 5.0, "downforce_f": 200, "downforce_r": 380, "max_speed": 300, "final_gear": 3.95, "brake_balance": -2, "camber_f": -2.3, "camber_r": -1.7, "toe_f": 0.12, "toe_r": 0.22, "lsd_init_r": 16, "lsd_accel_r": 27}
+    },
+}
+
+# ============================================
+# ФУНКЦИИ
+# ============================================
+
+def get_track_info(track_name):
+    """Возвращает информацию о трассе"""
+    if track_name in TRACK_DATABASE:
+        return TRACK_DATABASE[track_name]
+    # Для отсутствующих трасс - стандартные настройки
+    return {
+        "type": "mixed",
+        "description": "🏎️ Стандартная трасса",
+        "top_cars": ["Porsche 911 GT3 RS (992) '22", "Ferrari 488 GT3 '18", "McLaren 720S GT3 '19", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"],
+        "settings": {
+            "height_f": 70, "height_r": 75, "spring_f": 4.5, "spring_r": 4.8,
+            "downforce_f": 200, "downforce_r": 380, "max_speed": 290, "final_gear": 4.00,
+            "brake_balance": -2, "camber_f": -2.2, "camber_r": -1.6, "toe_f": 0.10, "toe_r": 0.20,
+            "lsd_init_r": 15, "lsd_accel_r": 26
+        }
+    }
+
+def get_custom_tune_for_car(car_name, track_name):
+    """Возвращает индивидуальные настройки для машины на трассе"""
     car_data = CAR_DATABASE.get(car_name, {})
     drive_type = car_data.get('drive_type', 'FR')
+    track_info = get_track_info(track_name)
+    base_settings = track_info["settings"].copy()
     
-    # Базовые настройки в зависимости от типа привода
-    if drive_type == "RR":  # Porsche
-        base = {
-            'height_f': 70, 'height_r': 75,
-            'spring_f': 4.8, 'spring_r': 5.2,
-            'arb_f': 6, 'arb_r': 5,
-            'comp_f': 32, 'comp_r': 34,
-            'ext_f': 42, 'ext_r': 44,
-            'camber_f': -2.2, 'camber_r': -1.6,
-            'toe_f': 0.12, 'toe_r': 0.18,
-            'brake_balance': -3,
-        }
-    elif drive_type == "MR":  # Ferrari, McLaren
-        base = {
-            'height_f': 68, 'height_r': 72,
-            'spring_f': 4.6, 'spring_r': 5.0,
-            'arb_f': 5, 'arb_r': 6,
-            'comp_f': 30, 'comp_r': 32,
-            'ext_f': 40, 'ext_r': 42,
-            'camber_f': -2.0, 'camber_r': -1.4,
-            'toe_f': 0.10, 'toe_r': 0.20,
-            'brake_balance': -2,
-        }
-    elif drive_type == "4WD":  # Nissan, Audi
-        base = {
-            'height_f': 72, 'height_r': 77,
-            'spring_f': 4.2, 'spring_r': 4.5,
-            'arb_f': 5, 'arb_r': 5,
-            'comp_f': 28, 'comp_r': 30,
-            'ext_f': 38, 'ext_r': 40,
-            'camber_f': -1.8, 'camber_r': -1.3,
-            'toe_f': 0.05, 'toe_r': 0.15,
-            'brake_balance': -1,
-        }
-    else:  # FR
-        base = {
-            'height_f': 75, 'height_r': 80,
-            'spring_f': 4.5, 'spring_r': 4.8,
-            'arb_f': 5, 'arb_r': 5,
-            'comp_f': 30, 'comp_r': 32,
-            'ext_f': 40, 'ext_r': 42,
-            'camber_f': -2.0, 'camber_r': -1.5,
-            'toe_f': 0.10, 'toe_r': 0.20,
-            'brake_balance': -2,
-        }
+    # Корректировка под тип привода
+    if drive_type == "RR":
+        base_settings["camber_f"] = max(-3.0, base_settings["camber_f"] - 0.1)
+        base_settings["camber_r"] = max(-2.5, base_settings["camber_r"] - 0.1)
+    elif drive_type == "4WD":
+        base_settings["camber_f"] = min(-1.5, base_settings["camber_f"] + 0.1)
+        base_settings["camber_r"] = min(-1.0, base_settings["camber_r"] + 0.1)
     
-    # Корректировка под трассу
-    if "Monza" in track_name:
-        return {
-            **base,
-            'height_f': base['height_f'] - 5, 'height_r': base['height_r'] - 5,
-            'downforce_f': 140, 'downforce_r': 280,
-            'max_speed': 330, 'final_gear': 3.60,
-            'lsd_init_f': 12, 'lsd_init_r': 18,
-            'lsd_accel_f': 20, 'lsd_accel_r': 30,
-            'lsd_brake_f': 14, 'lsd_brake_r': 20,
-        }
-    elif "Nordschleife" in track_name:
-        return {
-            **base,
-            'height_f': base['height_f'] + 5, 'height_r': base['height_r'] + 5,
-            'downforce_f': 220, 'downforce_r': 420,
-            'max_speed': 280, 'final_gear': 4.20,
-            'lsd_init_f': 10, 'lsd_init_r': 15,
-            'lsd_accel_f': 18, 'lsd_accel_r': 25,
-            'lsd_brake_f': 12, 'lsd_brake_r': 18,
-        }
-    elif "Suzuka" in track_name:
-        return {
-            **base,
-            'downforce_f': 200, 'downforce_r': 380,
-            'max_speed': 290, 'final_gear': 4.00,
-            'lsd_init_f': 11, 'lsd_init_r': 16,
-            'lsd_accel_f': 19, 'lsd_accel_r': 28,
-            'lsd_brake_f': 13, 'lsd_brake_r': 19,
-        }
-    elif "Tokyo" in track_name:
-        return {
-            **base,
-            'height_f': base['height_f'] + 3, 'height_r': base['height_r'] + 3,
-            'downforce_f': 160, 'downforce_r': 320,
-            'max_speed': 270, 'final_gear': 4.50,
-            'lsd_init_f': 9, 'lsd_init_r': 14,
-            'lsd_accel_f': 17, 'lsd_accel_r': 24,
-            'lsd_brake_f': 11, 'lsd_brake_r': 17,
-        }
-    else:
-        return {
-            **base,
-            'downforce_f': 180, 'downforce_r': 350,
-            'max_speed': 290, 'final_gear': 4.00,
-            'lsd_init_f': 10, 'lsd_init_r': 15,
-            'lsd_accel_f': 18, 'lsd_accel_r': 25,
-            'lsd_brake_f': 12, 'lsd_brake_r': 18,
-        }
+    return base_settings
 
-# ============================================
-# ТОП-5 МАШИН
-# ============================================
-
-def get_top_5_cars(track_name):
-    """Возвращает топ-5 машин для трассы"""
-    
-    if "Monza" in track_name:
-        sorted_cars = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('power', 0), reverse=True)
-    elif "Nordschleife" in track_name:
-        sorted_cars = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('power', 0) / max(x[1].get('weight', 1), 1), reverse=True)
-    elif "Tokyo" in track_name:
-        sorted_cars = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('weight', 9999))
-    else:
-        sorted_cars = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('pp', 0), reverse=True)
+def get_top_5_cars_with_data(track_name):
+    """Возвращает топ-5 машин для трассы с данными"""
+    track_info = get_track_info(track_name)
+    top_car_names = track_info["top_cars"]
     
     top_5 = []
-    for name, data in sorted_cars[:5]:
-        if data.get('pp', 0) > 0:
+    for car_name in top_car_names:
+        if car_name in CAR_DATABASE:
+            data = CAR_DATABASE[car_name]
             top_5.append({
-                'name': name,
+                'name': car_name,
                 'pp': data.get('pp', 0),
                 'power': data.get('power', 0),
                 'weight': data.get('weight', 0),
                 'drive': data.get('drive_type', '?')
             })
+    
     return top_5
 
 # ============================================
@@ -201,56 +381,31 @@ def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r,
 # ИНТЕРФЕЙС
 # ============================================
 
-st.title("🏎️ GT7 Тюнинг Калькулятор v4")
-st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин")
+st.title("🏎️ GT7 Тюнинг Калькулятор - Все трассы")
+st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин | 🏁 Трасс: **{len(TRACKS)}**")
 
 # Боковая панель
 with st.sidebar:
-    st.header("🏁 Выбор")
-    
+    st.header("🏁 Выбор трассы")
     selected_track = st.selectbox("Трасса", TRACKS)
+    
+    track_info = get_track_info(selected_track)
+    st.info(f"**Тип:** {track_info['description']}")
+    
+    st.header("🚗 Выбор автомобиля")
     selected_car = st.selectbox("Автомобиль", CAR_NAMES)
     
-    # Кнопка ручного применения (на всякий случай)
-    if st.button("🔄 Применить оптимальные настройки", use_container_width=True):
-        tune = get_custom_tune(selected_car, selected_track)
+    if st.button("🎯 Применить оптимальные настройки", use_container_width=True):
+        tune = get_custom_tune_for_car(selected_car, selected_track)
         for key, value in tune.items():
             st.session_state[key] = value
-        st.success(f"✅ Настройки обновлены для {selected_car[:30]} на трассе {selected_track}")
-        st.rerun()
-
-# ============================================
-# АВТООБНОВЛЕНИЕ ПРИ СМЕНЕ МАШИНЫ ИЛИ ТРАССЫ
-# ============================================
+        st.success(f"✅ Применены настройки для {selected_car[:30]}")
 
 # Инициализация
 if 'height_f' not in st.session_state:
-    tune = get_custom_tune(CAR_NAMES[0] if CAR_NAMES else "", TRACKS[0])
+    tune = get_custom_tune_for_car(CAR_NAMES[0] if CAR_NAMES else "", selected_track)
     for key, value in tune.items():
         st.session_state[key] = value
-    st.session_state.prev_car = CAR_NAMES[0] if CAR_NAMES else ""
-    st.session_state.prev_track = TRACKS[0]
-
-# Проверяем, изменилась ли машина или трасса
-car_changed = st.session_state.prev_car != selected_car
-track_changed = st.session_state.prev_track != selected_track
-
-if car_changed or track_changed:
-    st.session_state.prev_car = selected_car
-    st.session_state.prev_track = selected_track
-    
-    # Получаем новые настройки
-    new_tune = get_custom_tune(selected_car, selected_track)
-    for key, value in new_tune.items():
-        st.session_state[key] = value
-    
-    # Показываем уведомление
-    if car_changed:
-        st.toast(f"🚗 Настройки обновлены для {selected_car[:35]}", icon="✅")
-    if track_changed:
-        st.toast(f"🏁 Настройки обновлены для трассы {selected_track}", icon="✅")
-    
-    st.rerun()
 
 # ============================================
 # ТОП-5 МАШИН
@@ -258,7 +413,7 @@ if car_changed or track_changed:
 
 st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
 
-top_cars = get_top_5_cars(selected_track)
+top_cars = get_top_5_cars_with_data(selected_track)
 if top_cars:
     cols = st.columns(5)
     for i, car in enumerate(top_cars):
@@ -268,13 +423,15 @@ if top_cars:
             if st.button(f"✅ Выбрать", key=f"top_{i}"):
                 st.session_state.selected_car = car['name']
                 st.rerun()
+else:
+    st.warning("Рекомендации скоро будут добавлены")
 st.divider()
 
 # ============================================
 # ТЮНИНГ
 # ============================================
 
-st.subheader(f"🔧 Текущие настройки для {selected_car[:40]} на трассе {selected_track}")
+st.subheader(f"🔧 Настройки для {selected_car[:35]} на трассе {selected_track}")
 
 col1, col2 = st.columns(2)
 
@@ -303,6 +460,9 @@ with col2:
     st.markdown("### 🔧 LSD")
     st.session_state.lsd_init_r = st.slider("LSD начальный", 5, 25, st.session_state.lsd_init_r)
     st.session_state.lsd_accel_r = st.slider("LSD ускорение", 10, 40, st.session_state.lsd_accel_r)
+    
+    st.markdown("### 🛑 Тормоза")
+    st.session_state.brake_balance = st.slider("Баланс тормозов", -5, 5, st.session_state.brake_balance)
 
 # ============================================
 # АНАЛИЗ
@@ -348,12 +508,12 @@ if selected_car in CAR_DATABASE:
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=400)
     st.plotly_chart(fig, use_container_width=True)
     
-    # Информация о текущей машине
+    # Характеристики
     with st.expander("📋 Характеристики автомобиля"):
         st.write(f"**Тип привода:** {car_data.get('drive_type', '?')}")
         st.write(f"**Мощность:** {car_data.get('power', 0)} л.с.")
         st.write(f"**Вес:** {car_data.get('weight', 0)} кг")
-        st.write(f"**Соотношение вес/мощность:** {car_data.get('weight', 0) / car_data.get('power', 1):.2f} кг/л.с.")
+        st.write(f"**Удельная мощность:** {car_data.get('weight', 0) / car_data.get('power', 1):.2f} кг/л.с.")
 
 st.markdown("---")
-st.caption("💡 Настройки автоматически обновляются при смене машины или трассы")
+st.caption(f"🏎️ GT7 Калькулятор | {len(CAR_DATABASE)} машин | {len(TRACKS)} трасс")
