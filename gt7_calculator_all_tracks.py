@@ -131,39 +131,101 @@ def apply_track_preset(track_name):
 # ============================================
 
 def get_top_5_cars(track_name):
-    """Возвращает топ-5 машин для трассы"""
+    """Возвращает топ-5 машин для трассы с учётом типа трассы"""
     
     track_lower = track_name.lower()
     
-    # Определяем приоритетные характеристики
-    if "monza" in track_lower or "le mans" in track_lower or "daytona" in track_lower:
-        # Скоростные трассы - важна мощность
-        cars_sorted = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('power', 0), reverse=True)
-    elif "nordschleife" in track_lower or "nürburgring" in track_lower or "spa" in track_lower:
-        # Сложные трассы - важен баланс мощность/вес
-        cars_sorted = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('power', 0) / max(x[1].get('weight', 1), 1), reverse=True)
-    elif "tokyo" in track_lower or "city" in track_lower:
-        # Городские трассы - важна управляемость (лёгкие машины)
-        cars_sorted = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('weight', 9999))
-    elif "suzuka" in track_lower or "fuji" in track_lower or "autopolis" in track_lower:
-        # Техничные трассы - баланс
-        cars_sorted = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('pp', 0), reverse=True)
+    # Определяем тип трассы и критерии
+    if any(x in track_lower for x in ["monza", "le mans", "daytona", "high speed"]):
+        # СКОРОСТНЫЕ ТРАССЫ: важна максимальная мощность
+        print("Тип трассы: СКОРОСТНАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: (
+                               x[1].get('power', 0) * 2 +  # мощность важна
+                               x[1].get('pp', 0) * 0.5
+                           ), reverse=True)
+        description = "🏁 **Скоростная трасса** — рекомендуем мощные автомобили с высоким PP"
+        
+    elif any(x in track_lower for x in ["nordschleife", "nürburgring", "spa", "green"]):
+        # СЛОЖНЫЕ ТРАССЫ: важен баланс мощность/вес
+        print("Тип трассы: СЛОЖНАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: (
+                               x[1].get('power', 0) / max(x[1].get('weight', 1), 1) * 100  # удельная мощность
+                           ), reverse=True)
+        description = "🌲 **Сложная трасса** — рекомендуем автомобили с отличным соотношением мощность/вес"
+        
+    elif any(x in track_lower for x in ["tokyo", "city", "street"]):
+        # ГОРОДСКИЕ ТРАССЫ: важен малый вес
+        print("Тип трассы: ГОРОДСКАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: (
+                               -x[1].get('weight', 9999)  # чем легче, тем лучше
+                           ))
+        description = "🏙️ **Городская трасса** — рекомендуем лёгкие, маневренные автомобили"
+        
+    elif any(x in track_lower for x in ["suzuka", "fuji", "autopolis", "tsukuba"]):
+        # ТЕХНИЧНЫЕ ТРАССЫ: важен PP и управляемость
+        print("Тип трассы: ТЕХНИЧНАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: (
+                               x[1].get('pp', 0) * 1.5 +  # PP важен
+                               (x[1].get('power', 0) / max(x[1].get('weight', 1), 1)) * 50
+                           ), reverse=True)
+        description = "🗻 **Техничная трасса** — рекомендуем сбалансированные автомобили с высоким PP"
+        
+    elif any(x in track_lower for x in ["laguna", "willow", "trail", "deep"]):
+        # ИЗВИЛИСТЫЕ ТРАССЫ: важен малый вес и управляемость
+        print("Тип трассы: ИЗВИЛИСТАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: (
+                               -x[1].get('weight', 9999) * 2 +  # лёгкость важна
+                               x[1].get('pp', 0) * 0.5
+                           ))
+        description = "⛰️ **Извилистая трасса** — рекомендуем лёгкие автомобили с хорошей управляемостью"
+        
     else:
-        # По умолчанию - по PP
-        cars_sorted = sorted(CAR_DATABASE.items(), key=lambda x: x[1].get('pp', 0), reverse=True)
+        # ПО УМОЛЧАНИЮ: по PP
+        print("Тип трассы: СТАНДАРТНАЯ")
+        sorted_cars = sorted(CAR_DATABASE.items(), 
+                           key=lambda x: x[1].get('pp', 0), reverse=True)
+        description = "🏎️ **Стандартная трасса** — рекомендуем автомобили с высоким PP"
     
-    # Берём топ-5
+    # Берём топ-5 и обогащаем данными
     top_5 = []
-    for name, data in cars_sorted[:5]:
+    seen_names = set()
+    
+    for name, data in sorted_cars:
+        if len(top_5) >= 5:
+            break
+        
+        # Пропускаем дубликаты
+        if name in seen_names:
+            continue
+        seen_names.add(name)
+        
+        pp = data.get('pp', 0)
+        power = data.get('power', 0)
+        weight = data.get('weight', 0)
+        drive = data.get('drive_type', '?')
+        
+        # Пропускаем машины с нулевыми данными
+        if pp == 0 or power == 0 or weight == 0:
+            continue
+        
+        # Расчёт удельной мощности
+        power_to_weight = power / weight if weight > 0 else 0
+        
         top_5.append({
             'name': name,
-            'pp': data.get('pp', 0),
-            'power': data.get('power', 0),
-            'weight': data.get('weight', 0),
-            'drive': data.get('drive_type', '?')
+            'pp': round(pp, 0),
+            'power': round(power, 0),
+            'weight': round(weight, 0),
+            'power_to_weight': round(power_to_weight, 2),
+            'drive': drive
         })
     
-    return top_5
+    return top_5, description
 
 # ============================================
 # ФУНКЦИИ РАСЧЁТА
@@ -248,28 +310,36 @@ with st.sidebar:
 
 st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
 
-top_5_cars = get_top_5_cars(selected_track)
+top_5_cars, track_description = get_top_5_cars(selected_track)
+st.info(track_description)
 
 if top_5_cars:
+    # Показываем в виде таблицы
+    df_top = pd.DataFrame(top_5_cars)
+    df_top = df_top.rename(columns={
+        'name': 'Автомобиль',
+        'pp': 'PP',
+        'power': 'Мощность (л.с.)',
+        'weight': 'Вес (кг)',
+        'power_to_weight': 'кг/л.с.',
+        'drive': 'Привод'
+    })
+    
+    st.dataframe(df_top, use_container_width=True)
+    
+    # Кнопки выбора
+    st.markdown("### Выберите машину:")
     cols = st.columns(5)
-    medals = ["🥇", "🥈", "🥉", "4️⃣", "5️⃣"]
     
     for i, car in enumerate(top_5_cars):
         with cols[i]:
-            st.markdown(f"### {medals[i]}")
             st.markdown(f"**{car['name'][:25]}**")
-            st.metric("PP", f"{car['pp']:.0f}")
-            st.metric("Мощность", f"{car['power']:.0f} л.с.")
-            st.metric("Вес", f"{car['weight']:.0f} кг")
-            st.caption(f"Привод: {car['drive']}")
-            
-            if st.button(f"Выбрать", key=f"pick_{i}"):
+            st.caption(f"PP: {car['pp']} | {car['power']} л.с.")
+            if st.button(f"✅ Выбрать", key=f"select_top_{i}"):
                 st.session_state.selected_car = car['name']
                 st.rerun()
 else:
-    st.info("Загрузка рекомендаций...")
-
-st.divider()
+    st.warning("Недостаточно данных для рекомендаций")
 
 # ============================================
 # ТЮНИНГ
