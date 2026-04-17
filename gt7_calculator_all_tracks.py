@@ -1247,10 +1247,7 @@ def get_TOP_CARS_DATABASE(track_name):
         return TOP_CARS_DATABASE_DATABASE[track_name]["TOP_CARS_DATABASE"]
     return ["Porsche 911 GT3 RS (992) '22", "Ferrari 488 GT3 '18", "McLaren 720S GT3 '19", "Nissan GT-R Nismo GT3 '18", "Mercedes-AMG GT3 '20"]
 
-# ============================================
 # ИНИЦИАЛИЗАЦИЯ
-# ============================================
-
 if 'height_f' not in st.session_state:
     for key, value in DEFAULT_SETTINGS.items():
         st.session_state[key] = value
@@ -1258,6 +1255,8 @@ if 'selected_car' not in st.session_state:
     st.session_state.selected_car = CAR_NAMES[0] if CAR_NAMES else ""
 if 'prev_track' not in st.session_state:
     st.session_state.prev_track = ""
+if 'prev_car' not in st.session_state:  # ДОБАВЬТЕ ЭТУ СТРОКУ
+    st.session_state.prev_car = st.session_state.selected_car
 
 # ============================================
 # ИНТЕРФЕЙС
@@ -1269,22 +1268,55 @@ st.markdown(f"📊 В базе: **{len(CAR_DATABASE)}** машин | 🏁 Тра
 # Боковая панель
 with st.sidebar:
     st.header("🏁 Выбор трассы")
-    selected_track = st.selectbox("Трасса", TRACKS)
+    selected_track = st.selectbox("Трасса", TRACKS, key="track_select")
     
     # Автообновление при смене трассы
-    if selected_track != st.session_state.prev_track:
+    if selected_track != st.session_state.get('prev_track', ''):
         st.session_state.prev_track = selected_track
         settings = get_track_settings(selected_track)
         for key, value in settings.items():
             st.session_state[key] = value
         st.rerun()
     
-    st.info(f"📝 {get_track_description(selected_track)}")
-    
     st.header("🚗 Выбор автомобиля")
     selected_car = st.selectbox("Автомобиль", CAR_NAMES, 
-                                 index=CAR_NAMES.index(st.session_state.selected_car) if st.session_state.selected_car in CAR_NAMES else 0)
-    st.session_state.selected_car = selected_car
+                                 index=CAR_NAMES.index(st.session_state.selected_car) if st.session_state.selected_car in CAR_NAMES else 0,
+                                 key="car_select")
+    
+    # ========== НОВЫЙ КОД: АВТООБНОВЛЕНИЕ ПРИ СМЕНЕ МАШИНЫ ==========
+    if selected_car != st.session_state.get('selected_car', ''):
+        st.session_state.selected_car = selected_car
+        
+        # Получаем настройки для конкретной машины на этой трассе
+        car_data = CAR_DATABASE.get(selected_car, {})
+        drive_type = car_data.get('drive_type', 'FR')
+        
+        # Базовые настройки трассы
+        track_settings = get_track_settings(selected_track)
+        
+        # КОРРЕКТИРУЕМ НАСТРОЙКИ ПОД ТИП ПРИВОДА МАШИНЫ
+        if drive_type == "RR":  # Porsche
+            track_settings['camber_f'] = max(-3.0, track_settings.get('camber_f', -2.0) - 0.2)
+            track_settings['camber_r'] = max(-2.5, track_settings.get('camber_r', -1.5) - 0.2)
+            track_settings['toe_f'] = min(0.20, track_settings.get('toe_f', 0.10) + 0.02)
+            track_settings['brake_balance'] = -3
+        elif drive_type == "MR":  # Ferrari, McLaren
+            track_settings['camber_f'] = max(-2.8, track_settings.get('camber_f', -2.0) - 0.1)
+            track_settings['camber_r'] = max(-2.2, track_settings.get('camber_r', -1.5) - 0.1)
+            track_settings['brake_balance'] = -2
+        elif drive_type == "4WD":  # Nissan, Audi
+            track_settings['camber_f'] = min(-1.8, track_settings.get('camber_f', -2.0) + 0.2)
+            track_settings['camber_r'] = min(-1.3, track_settings.get('camber_r', -1.5) + 0.2)
+            track_settings['toe_f'] = max(0.00, track_settings.get('toe_f', 0.10) - 0.05)
+            track_settings['brake_balance'] = -1
+        # FR (стандартный) — оставляем без изменений
+        
+        # Применяем скорректированные настройки
+        for key, value in track_settings.items():
+            st.session_state[key] = value
+        
+        st.toast(f"🚗 Настройки обновлены для {selected_car[:35]}", icon="✅")
+        st.rerun()
     
     if st.button("🎯 Применить настройки трассы", use_container_width=True):
         settings = get_track_settings(selected_track)
