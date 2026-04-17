@@ -1180,26 +1180,33 @@ def get_track_settings(track_name):
 # ФУНКЦИИ РАСЧЁТА
 # ============================================
 
-def calculate_pp(weight, power, downforce, drive_type):
+def calculate_pp(weight, power, downforce, drive_type, height_f, height_r, spring_f, spring_r, camber_f, camber_r, toe_f, toe_r):
+    """Расчёт PP с учётом всех настроек"""
     if weight == 0:
         return 0
+    
+    # Базовая формула
     base_pp = (power / weight) * 100
     downforce_bonus = downforce / 20
     drive_bonus = 1.1 if drive_type == "4WD" else 1.0
-    return round(base_pp * drive_bonus + downforce_bonus, 1)
-
-def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r, 
-                       spring_f, spring_r, arb_f, arb_r, downforce_f, downforce_r):
-    turn_in = round((camber_f - camber_r) * 2 + (toe_f - toe_r) * 10 + (height_r - height_f) / 20 + (arb_f - arb_r) / 10, 1)
-    turn_in = max(-10, min(10, turn_in))
-    stability = round(10 - abs(toe_f + toe_r) * 5 - abs(camber_f + camber_r) / 2 - abs(height_f - height_r) / 50, 1)
-    stability = max(0, min(10, stability))
-    grip = round(5 + (downforce_f + downforce_r) / 100 + (4 - abs(camber_f + camber_r) / 2) - abs(spring_f - spring_r) / 10, 1)
-    grip = max(1, min(10, grip))
-    response = round((spring_f + spring_r) / 2 + (100 - (height_f + height_r) / 2) / 20, 1)
-    response = max(1, min(10, response))
-    return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
-
+    
+    # Влияние подвески (отклонение от стандарта 75/80)
+    height_penalty = abs(height_f - 75) * 0.2 + abs(height_r - 80) * 0.2
+    
+    # Влияние жёсткости пружин (отклонение от стандарта 4.5/4.8)
+    spring_penalty = abs(spring_f - 4.5) * 1.5 + abs(spring_r - 4.8) * 1.5
+    
+    # Влияние развала (отклонение от стандарта -2.0/-1.5)
+    camber_penalty = abs(camber_f + 2.0) * 4 + abs(camber_r + 1.5) * 4
+    
+    # Влияние схождения (отклонение от стандарта 0.10/0.20)
+    toe_penalty = abs(toe_f - 0.10) * 40 + abs(toe_r - 0.20) * 40
+    
+    # Итоговый PP (не может быть ниже 300 и выше 1000)
+    total_pp = base_pp * drive_bonus + downforce_bonus - height_penalty - spring_penalty - camber_penalty - toe_penalty
+    
+    return round(max(300, min(1000, total_pp)), 1)
+    
 # ============================================
 # ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ИНТЕРФЕЙСА
 # ============================================
@@ -1358,35 +1365,26 @@ if selected_car in CAR_DATABASE:
         st.session_state.toe_f, st.session_state.toe_r
     )
     
-    handling = calculate_handling(
-        st.session_state.camber_f, st.session_state.camber_r,
-        st.session_state.toe_f, st.session_state.toe_r,
-        st.session_state.height_f, st.session_state.height_r,
-        st.session_state.spring_f, st.session_state.spring_r,
-        st.session_state.arb_f, st.session_state.arb_r,
-        st.session_state.downforce_f, st.session_state.downforce_r
-    )
+    def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r, 
+                       spring_f, spring_r, arb_f, arb_r, downforce_f, downforce_r):
+    """Расчёт управляемости"""
+    # Поворачиваемость
+    turn_in = round((camber_f - camber_r) * 2 + (toe_f - toe_r) * 10 + (height_r - height_f) / 20 + (arb_f - arb_r) / 10, 1)
+    turn_in = max(-10, min(10, turn_in))
     
-    col1, col2, col3 = st.columns(3)
-    with col1:
-        st.metric("🏁 Итоговый PP", f"{pp}", delta=f"Δ {pp - car_data.get('pp', 0):+.1f}")
-        st.caption(f"Базовый PP: {car_data.get('pp', 0)}")
-    with col2:
-        st.metric("🔄 Поворачиваемость", f"{handling['turn_in']:.1f}")
-        if handling['turn_in'] < -2:
-            st.caption("⚠️ Недостаточная")
-        elif handling['turn_in'] > 2:
-            st.caption("⚠️ Избыточная")
-        else:
-            st.caption("✅ Нейтральная")
-    with col3:
-        st.metric("🛡️ Стабильность", f"{handling['stability']:.1f}/10")
-        if handling['stability'] < 5:
-            st.caption("⚠️ Низкая")
-        elif handling['stability'] > 8:
-            st.caption("✅ Отличная")
-        else:
-            st.caption("👍 Хорошая")
+    # Стабильность
+    stability = round(10 - abs(toe_f + toe_r) * 5 - abs(camber_f + camber_r) / 2 - abs(height_f - height_r) / 50, 1)
+    stability = max(0, min(10, stability))
+    
+    # Сцепление
+    grip = round(5 + (downforce_f + downforce_r) / 100 + (4 - abs(camber_f + camber_r) / 2) - abs(spring_f - spring_r) / 10, 1)
+    grip = max(1, min(10, grip))
+    
+    # Отклик
+    response = round((spring_f + spring_r) / 2 + (100 - (height_f + height_r) / 2) / 20, 1)
+    response = max(1, min(10, response))
+    
+    return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
     
     # Показываем, какие настройки больше всего влияют на PP
     with st.expander("📉 Влияние настроек на PP"):
