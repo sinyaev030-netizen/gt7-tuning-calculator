@@ -1208,7 +1208,6 @@ def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r,
     response = max(1, min(10, response))
     return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
 
-
 def calculate_max_speed(gear_ratios, final_gear, rpm=8000, tire_diameter=0.65):
     """Расчёт максимальной скорости на основе передаточных чисел"""
     if not gear_ratios:
@@ -1218,7 +1217,7 @@ def calculate_max_speed(gear_ratios, final_gear, rpm=8000, tire_diameter=0.65):
     max_speed = (rpm * 60 * 3.1416 * tire_diameter) / (1000 * top_ratio * final_gear)
     return round(max_speed, 0)
 
-    
+  
 # ============================================
 # ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ИНТЕРФЕЙСА
 # ============================================
@@ -1404,7 +1403,7 @@ with col2:
                 key=f"gear_input_{i+1}"
             )
     
-    # Финальная передача
+   # Финальная передача
     st.session_state.final_gear = st.number_input(
         "Финальная передача", 
         min_value=2.500, 
@@ -1414,21 +1413,6 @@ with col2:
         format="%.3f",
         key="final_gear_input"
     )
-    
-   def calculate_max_speed(gear_ratios, final_gear, rpm=8000, tire_diameter=0.65):
-    """Расчёт максимальной скорости на основе передаточных чисел"""
-    if not gear_ratios:
-        return 0
-    
-    # Формула: скорость = (RPM * 60 * π * диаметр_шины) / (1000 * передача * финальная)
-    # Упрощённая версия для сравнения
-    top_gear = max(gear_ratios.keys())
-    top_ratio = gear_ratios[top_gear]
-    
-    # Ориентировочная максимальная скорость
-    max_speed = (rpm * 60 * 3.1416 * tire_diameter) / (1000 * top_ratio * final_gear)
-    
-    return round(max_speed, 0)
     
     st.markdown("### 🛑 Тормоза")
     st.session_state.brake_balance = st.slider("Баланс тормозов", -5, 5, st.session_state.brake_balance)
