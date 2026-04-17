@@ -1346,11 +1346,16 @@ if selected_car in CAR_DATABASE:
     car_data = CAR_DATABASE[selected_car]
     total_downforce = st.session_state.downforce_f + st.session_state.downforce_r
     
+    # Расчёт PP с учётом всех настроек
     pp = calculate_pp(
         car_data.get('weight', 1450),
         car_data.get('power', 500),
         total_downforce,
-        car_data.get('drive_type', 'FR')
+        car_data.get('drive_type', 'FR'),
+        st.session_state.height_f, st.session_state.height_r,
+        st.session_state.spring_f, st.session_state.spring_r,
+        st.session_state.camber_f, st.session_state.camber_r,
+        st.session_state.toe_f, st.session_state.toe_r
     )
     
     handling = calculate_handling(
@@ -1364,20 +1369,75 @@ if selected_car in CAR_DATABASE:
     
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("🏁 Итоговый PP", f"{pp}")
+        st.metric("🏁 Итоговый PP", f"{pp}", delta=f"Δ {pp - car_data.get('pp', 0):+.1f}")
         st.caption(f"Базовый PP: {car_data.get('pp', 0)}")
     with col2:
         st.metric("🔄 Поворачиваемость", f"{handling['turn_in']:.1f}")
+        if handling['turn_in'] < -2:
+            st.caption("⚠️ Недостаточная")
+        elif handling['turn_in'] > 2:
+            st.caption("⚠️ Избыточная")
+        else:
+            st.caption("✅ Нейтральная")
     with col3:
         st.metric("🛡️ Стабильность", f"{handling['stability']:.1f}/10")
+        if handling['stability'] < 5:
+            st.caption("⚠️ Низкая")
+        elif handling['stability'] > 8:
+            st.caption("✅ Отличная")
+        else:
+            st.caption("👍 Хорошая")
+    
+    # Показываем, какие настройки больше всего влияют на PP
+    with st.expander("📉 Влияние настроек на PP"):
+        st.write("**Как настройки влияют на PP:**")
+        
+        # Вычисляем потери PP от каждой настройки
+        height_loss = abs(st.session_state.height_f - 75) * 0.2 + abs(st.session_state.height_r - 80) * 0.2
+        spring_loss = abs(st.session_state.spring_f - 4.5) * 2 + abs(st.session_state.spring_r - 4.8) * 2
+        camber_loss = abs(st.session_state.camber_f + 2.0) * 5 + abs(st.session_state.camber_r + 1.5) * 5
+        toe_loss = abs(st.session_state.toe_f - 0.10) * 50 + abs(st.session_state.toe_r - 0.20) * 50
+        
+        st.write(f"- **Высота подвески:** -{height_loss:.1f} PP (чем ниже, тем лучше для PP)")
+        st.write(f"- **Жёсткость пружин:** -{spring_loss:.1f} PP (отклонение от стандарта снижает PP)")
+        st.write(f"- **Развал:** -{camber_loss:.1f} PP (большой развал снижает PP)")
+        st.write(f"- **Схождение:** -{toe_loss:.1f} PP (большое схождение сильно снижает PP)")
     
     # Радар
-    categories = ['Поворачиваемость', 'Стабильность', 'Сцепление', 'Отклик']
-    values = [handling['turn_in'] + 5, handling['stability'], handling['grip'], handling['response']]
+    categories = ['Ускорение', 'Поворачиваемость', 'Стабильность', 'Сцепление', 'Аэродинамика']
+    values = [
+        min((car_data.get('power', 500) / car_data.get('weight', 1450)) * 20, 10),
+        handling['turn_in'] + 5,
+        handling['stability'],
+        handling['grip'],
+        min(total_downforce / 50, 10)
+    ]
     
     fig = go.Figure(data=go.Scatterpolar(r=values, theta=categories, fill='toself', name=selected_car[:20]))
-    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=400)
+    fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=450)
     st.plotly_chart(fig, use_container_width=True)
-
-st.markdown("---")
-st.caption(f"🏎️ GT7 Калькулятор | {len(CAR_DATABASE)} машин | {len(TRACKS)} трасс")
+    
+    # Рекомендации по улучшению PP
+    st.subheader("💡 Как улучшить PP")
+    recommendations = []
+    
+    if st.session_state.height_f < 65:
+        recommendations.append("📈 **Высота подвески слишком низкая** — поднимите до 65-75 мм для лучшего PP")
+    if st.session_state.height_r < 70:
+        recommendations.append("📈 **Задняя подвеска слишком низкая** — поднимите до 70-80 мм")
+    if abs(st.session_state.camber_f) > 2.5:
+        recommendations.append("📈 **Слишком большой развал спереди** — уменьшите до -2.0..-2.5°")
+    if abs(st.session_state.camber_r) > 2.0:
+        recommendations.append("📈 **Слишком большой развал сзади** — уменьшите до -1.5..-2.0°")
+    if abs(st.session_state.toe_f) > 0.20:
+        recommendations.append("📈 **Слишком большое схождение спереди** — уменьшите до 0.05-0.15")
+    if abs(st.session_state.toe_r) > 0.25:
+        recommendations.append("📈 **Слишком большое схождение сзади** — уменьшите до 0.15-0.25")
+    
+    if not recommendations:
+        recommendations.append("✅ Настройки оптимальны для PP! Отличный баланс.")
+    
+    for rec in recommendations:
+        st.write(rec)
+else:
+    st.warning("Выберите машину из списка")
