@@ -1444,7 +1444,7 @@ if selected_car in CAR_DATABASE:
     car_data = CAR_DATABASE[selected_car]
     total_downforce = st.session_state.downforce_f + st.session_state.downforce_r
     
-    # Расчёт PP с учётом всех настроек (12 аргументов)
+    # Расчёт PP
     pp = calculate_pp(
         car_data.get('weight', 1450),
         car_data.get('power', 500),
@@ -1503,30 +1503,21 @@ if selected_car in CAR_DATABASE:
     fig = go.Figure(data=go.Scatterpolar(r=values, theta=categories, fill='toself', name=selected_car[:20]))
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=450)
     st.plotly_chart(fig, use_container_width=True)
-
-    with st.expander("📋 Текущие настройки КПП"):
-    # Собираем передачи в словарь
-    gear_ratios = {}
-    for i in range(st.session_state.get('num_gears', 6)):
-        gear_key = f"gear_{i+1}"
-        gear_ratios[i+1] = st.session_state.get(gear_key, 1.000)
     
-    # Показываем таблицу передач
-    gear_df = pd.DataFrame({
-        'Передача': list(gear_ratios.keys()),
-        'Передаточное число': [f"{v:.3f}" for v in gear_ratios.values()]
-    })
-    st.dataframe(gear_df, use_container_width=True, hide_index=True)
-    
-    # Показываем финальную передачу и макс скорость
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.metric("Финальная передача", f"{st.session_state.final_gear:.3f}")
-    with col_b:
-        # Рассчитываем примерную максимальную скорость
-        max_speed_est = calculate_max_speed(gear_ratios, st.session_state.final_gear)
-        st.metric("Макс скорость (расчётная)", f"{max_speed_est:.0f} км/ч")
-        st.caption(f"Настройка: {st.session_state.max_speed} км/ч")
+    # ========== НАСТРОЙКИ КПП (ПРОСТОЙ ВАРИАНТ) ==========
+    with st.expander("📋 Настройки КПП"):
+        num_gears = st.session_state.get('num_gears', 6)
+        
+        # Таблица передач
+        gear_data = []
+        for i in range(num_gears):
+            gear_key = f"gear_{i+1}"
+            ratio = st.session_state.get(gear_key, 1.000)
+            gear_data.append({"Передача": i+1, "Передаточное число": f"{ratio:.3f}"})
+        
+        st.table(gear_data)
+        st.write(f"**Финальная передача:** {st.session_state.final_gear:.3f}")
+        st.write(f"**Максимальная скорость:** {st.session_state.max_speed} км/ч")
     
     # Рекомендации
     st.subheader("💡 Рекомендации")
