@@ -1177,45 +1177,47 @@ def get_track_settings(track_name):
     return settings
 
 # ============================================
-# ФУНКЦИИ РАСЧЁТА (ТОЛЬКО ЭТИ ВЕРСИИ)
+# ФУНКЦИИ РАСЧЁТА (В НАЧАЛЕ ФАЙЛА)
 # ============================================
 
 def calculate_pp(weight, power, downforce, drive_type, height_f, height_r, spring_f, spring_r, camber_f, camber_r, toe_f, toe_r):
     """Расчёт PP с учётом всех настроек"""
     if weight == 0:
         return 0
-    
     base_pp = (power / weight) * 100
     downforce_bonus = downforce / 20
     drive_bonus = 1.1 if drive_type == "4WD" else 1.0
-    
     height_penalty = abs(height_f - 75) * 0.2 + abs(height_r - 80) * 0.2
     spring_penalty = abs(spring_f - 4.5) * 1.5 + abs(spring_r - 4.8) * 1.5
     camber_penalty = abs(camber_f + 2.0) * 4 + abs(camber_r + 1.5) * 4
     toe_penalty = abs(toe_f - 0.10) * 40 + abs(toe_r - 0.20) * 40
-    
     total_pp = base_pp * drive_bonus + downforce_bonus - height_penalty - spring_penalty - camber_penalty - toe_penalty
-    
     return round(max(300, min(1000, total_pp)), 1)
 
 
 def calculate_handling(camber_f, camber_r, toe_f, toe_r, height_f, height_r, 
                        spring_f, spring_r, arb_f, arb_r, downforce_f, downforce_r):
     """Расчёт управляемости"""
-    
     turn_in = round((camber_f - camber_r) * 2 + (toe_f - toe_r) * 10 + (height_r - height_f) / 20 + (arb_f - arb_r) / 10, 1)
     turn_in = max(-10, min(10, turn_in))
-    
     stability = round(10 - abs(toe_f + toe_r) * 5 - abs(camber_f + camber_r) / 2 - abs(height_f - height_r) / 50, 1)
     stability = max(0, min(10, stability))
-    
     grip = round(5 + (downforce_f + downforce_r) / 100 + (4 - abs(camber_f + camber_r) / 2) - abs(spring_f - spring_r) / 10, 1)
     grip = max(1, min(10, grip))
-    
     response = round((spring_f + spring_r) / 2 + (100 - (height_f + height_r) / 2) / 20, 1)
     response = max(1, min(10, response))
-    
     return {'turn_in': turn_in, 'stability': stability, 'grip': grip, 'response': response}
+
+
+def calculate_max_speed(gear_ratios, final_gear, rpm=8000, tire_diameter=0.65):
+    """Расчёт максимальной скорости на основе передаточных чисел"""
+    if not gear_ratios:
+        return 0
+    top_gear = max(gear_ratios.keys())
+    top_ratio = gear_ratios[top_gear]
+    max_speed = (rpm * 60 * 3.1416 * tire_diameter) / (1000 * top_ratio * final_gear)
+    return round(max_speed, 0)
+
     
 # ============================================
 # ДОПОЛНИТЕЛЬНЫЕ ФУНКЦИИ ДЛЯ ИНТЕРФЕЙСА
