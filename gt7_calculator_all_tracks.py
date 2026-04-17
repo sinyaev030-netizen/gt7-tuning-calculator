@@ -1231,7 +1231,7 @@ if 'prev_car' not in st.session_state:  # ДОБАВЬТЕ ЭТУ СТРОКУ
 
                 
                 # Корректируем настройки под тип привода
-                if drive_type == "RR":  # Porsche
+if drive_type == "RR":  # Porsche
                     track_settings['camber_f'] = max(-3.0, track_settings.get('camber_f', -2.0) - 0.2)
                     track_settings['camber_r'] = max(-2.5, track_settings.get('camber_r', -1.5) - 0.2)
                     track_settings['toe_f'] = min(0.20, track_settings.get('toe_f', 0.10) + 0.02)
