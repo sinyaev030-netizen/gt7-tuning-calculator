@@ -1228,30 +1228,7 @@ if 'prev_track' not in st.session_state:
 if 'prev_car' not in st.session_state:  # ДОБАВЬТЕ ЭТУ СТРОКУ
     st.session_state.prev_car = st.session_state.selected_car
 
-# ============================================
-# ТОП-5 МАШИН
-# ============================================
 
-st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
-
-top_cars_list = get_top_cars(selected_track)
-if top_cars_list:
-    cols = st.columns(5)
-    for i, car_name in enumerate(top_cars_list):
-        with cols[i]:
-            st.markdown(f"**{i+1}. {car_name[:25]}**")
-            if car_name in CAR_DATABASE:
-                data = CAR_DATABASE[car_name]
-                st.caption(f"PP: {data.get('pp', 0)} | {data.get('power', 0)} л.с.")
-            
-            # КНОПКА ВЫБОРА С ОБНОВЛЕНИЕМ НАСТРОЕК
-            if st.button(f"✅ Выбрать", key=f"top_{i}"):
-                st.session_state.selected_car = car_name
-                
-                # Получаем настройки для выбранной машины на текущей трассе
-                car_data = CAR_DATABASE.get(car_name, {})
-                drive_type = car_data.get('drive_type', 'FR')
-                track_settings = get_track_settings(selected_track)
                 
                 # Корректируем настройки под тип привода
                 if drive_type == "RR":  # Porsche
@@ -1302,6 +1279,31 @@ with st.sidebar:
     selected_car = st.selectbox("Автомобиль", CAR_NAMES, 
                                  index=CAR_NAMES.index(st.session_state.selected_car) if st.session_state.selected_car in CAR_NAMES else 0,
                                  key="car_select")
+
+# ============================================
+# ТОП-5 МАШИН
+# ============================================
+
+st.subheader(f"🏆 Топ-5 машин для трассы: {selected_track}")
+
+top_cars_list = get_top_cars(selected_track)
+if top_cars_list:
+    cols = st.columns(5)
+    for i, car_name in enumerate(top_cars_list):
+        with cols[i]:
+            st.markdown(f"**{i+1}. {car_name[:25]}**")
+            if car_name in CAR_DATABASE:
+                data = CAR_DATABASE[car_name]
+                st.caption(f"PP: {data.get('pp', 0)} | {data.get('power', 0)} л.с.")
+            
+            # КНОПКА ВЫБОРА С ОБНОВЛЕНИЕМ НАСТРОЕК
+            if st.button(f"✅ Выбрать", key=f"top_{i}"):
+                st.session_state.selected_car = car_name
+                
+                # Получаем настройки для выбранной машины на текущей трассе
+                car_data = CAR_DATABASE.get(car_name, {})
+                drive_type = car_data.get('drive_type', 'FR')
+                track_settings = get_track_settings(selected_track)
     
     # ========== НОВЫЙ КОД: АВТООБНОВЛЕНИЕ ПРИ СМЕНЕ МАШИНЫ ==========
     if selected_car != st.session_state.get('selected_car', ''):
