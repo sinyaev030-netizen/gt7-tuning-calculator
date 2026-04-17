@@ -1373,13 +1373,60 @@ with col2:
     st.session_state.downforce_f = st.slider("Прижимная сила перед", 100, 300, st.session_state.downforce_f)
     st.session_state.downforce_r = st.slider("Прижимная сила зад", 200, 500, st.session_state.downforce_r)
     
-    st.markdown("### ⚙️ Трансмиссия")
-    st.session_state.max_speed = st.slider("Макс скорость (км/ч)", 250, 360, st.session_state.max_speed)
-    st.session_state.final_gear = st.slider("Финальная передача", 3.0, 5.0, st.session_state.final_gear, 0.05)
-    
     st.markdown("### 🔧 LSD")
     st.session_state.lsd_init_r = st.slider("LSD начальный момент", 5, 25, st.session_state.lsd_init_r)
     st.session_state.lsd_accel_r = st.slider("LSD ускорение", 10, 40, st.session_state.lsd_accel_r)
+    
+    # ========== НОВЫЙ БЛОК КПП ==========
+    st.markdown("### ⚙️ КПП (передаточные числа)")
+    
+    # Количество передач
+    num_gears = st.selectbox("Количество передач", [5, 6, 7, 8], index=1, key="num_gears")
+    
+    # Передачи
+    gear_cols = st.columns(num_gears)
+    for i in range(num_gears):
+        with gear_cols[i]:
+            gear_key = f"gear_{i+1}"
+            if gear_key not in st.session_state:
+                default_gears = {1: 2.800, 2: 1.900, 3: 1.400, 4: 1.100, 5: 0.900, 6: 0.750, 7: 0.650, 8: 0.580}
+                st.session_state[gear_key] = default_gears.get(i+1, 1.000)
+            
+            st.session_state[gear_key] = st.number_input(
+                f"{i+1}-я", 
+                min_value=0.300, 
+                max_value=4.500, 
+                value=st.session_state[gear_key], 
+                step=0.010,
+                format="%.3f",
+                key=f"gear_input_{i+1}"
+            )
+    
+    # Финальная передача
+    st.session_state.final_gear = st.number_input(
+        "Финальная передача", 
+        min_value=2.500, 
+        max_value=5.500, 
+        value=st.session_state.get('final_gear', 4.000), 
+        step=0.010,
+        format="%.3f",
+        key="final_gear_input"
+    )
+    
+   def calculate_max_speed(gear_ratios, final_gear, rpm=8000, tire_diameter=0.65):
+    """Расчёт максимальной скорости на основе передаточных чисел"""
+    if not gear_ratios:
+        return 0
+    
+    # Формула: скорость = (RPM * 60 * π * диаметр_шины) / (1000 * передача * финальная)
+    # Упрощённая версия для сравнения
+    top_gear = max(gear_ratios.keys())
+    top_ratio = gear_ratios[top_gear]
+    
+    # Ориентировочная максимальная скорость
+    max_speed = (rpm * 60 * 3.1416 * tire_diameter) / (1000 * top_ratio * final_gear)
+    
+    return round(max_speed, 0)
     
     st.markdown("### 🛑 Тормоза")
     st.session_state.brake_balance = st.slider("Баланс тормозов", -5, 5, st.session_state.brake_balance)
@@ -1454,6 +1501,30 @@ if selected_car in CAR_DATABASE:
     fig = go.Figure(data=go.Scatterpolar(r=values, theta=categories, fill='toself', name=selected_car[:20]))
     fig.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 10])), height=450)
     st.plotly_chart(fig, use_container_width=True)
+
+    with st.expander("📋 Текущие настройки КПП"):
+    # Собираем передачи в словарь
+    gear_ratios = {}
+    for i in range(st.session_state.get('num_gears', 6)):
+        gear_key = f"gear_{i+1}"
+        gear_ratios[i+1] = st.session_state.get(gear_key, 1.000)
+    
+    # Показываем таблицу передач
+    gear_df = pd.DataFrame({
+        'Передача': list(gear_ratios.keys()),
+        'Передаточное число': [f"{v:.3f}" for v in gear_ratios.values()]
+    })
+    st.dataframe(gear_df, use_container_width=True, hide_index=True)
+    
+    # Показываем финальную передачу и макс скорость
+    col_a, col_b = st.columns(2)
+    with col_a:
+        st.metric("Финальная передача", f"{st.session_state.final_gear:.3f}")
+    with col_b:
+        # Рассчитываем примерную максимальную скорость
+        max_speed_est = calculate_max_speed(gear_ratios, st.session_state.final_gear)
+        st.metric("Макс скорость (расчётная)", f"{max_speed_est:.0f} км/ч")
+        st.caption(f"Настройка: {st.session_state.max_speed} км/ч")
     
     # Рекомендации
     st.subheader("💡 Рекомендации")
